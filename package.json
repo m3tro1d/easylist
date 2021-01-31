@@ -1,0 +1,25 @@
+{
+  "name": "easylist",
+  "version": "0.0.0",
+  "description": "easylist",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m3tro1d/easylist.git"
+  },
+  "keywords": [
+    "tasklist"
+  ],
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/m3tro1d/easylist/issues"
+  },
+  "homepage": "https://github.com/m3tro1d/easylist#readme"
+}
