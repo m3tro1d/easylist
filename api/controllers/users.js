@@ -1,3 +1,8 @@
+const mongoose = require('mongoose');
+
+
+const User = mongoose.model('User');
+
 module.exports.register = (req, res, next) => {
   res.end('Register');
 }

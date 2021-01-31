@@ -1,43 +1,31 @@
 const express = require('express');
 
 // Controller goes here
-// require...
+const ctrlUserdata = require('../controllers/userdata.js');
 
 // Router for the blog API routes
 const router = express.Router();
 
 // Get tasks
-router.get('/tasks', (req, res, next) => {
-  res.end('Tasks');
-});
+router.get('/tasks', ctrlUserdata.getTasks);
+// Get one task
+router.get('/tasks/:id', ctrlUserdata.getOneTask);
 // Add a task
-router.post('/tasks', (req, res, next) => {
-  res.end('Create task.');
-});
+router.post('/tasks', ctrlUserdata.addTask);
 // Update a task
-router.put('/tasks/:id', (req, res, next) => {
-  res.end('Update task.');
-});
+router.put('/tasks/:id', ctrlUserdata.updateTask);
 // Delete a task
-router.delete('/tasks/:id', (req, res, next) => {
-  res.end('Delete task.');
-});
+router.delete('/tasks/:id', ctrlUserdata.deleteTask);
 
 // Get virtues
-router.get('/virtues', (req, res, next) => {
-  res.end('Virtues');
-});
+router.get('/virtues', ctrlUserdata.getVirtues);
+// Get one virtue
+router.get('/virtues/:id', ctrlUserdata.getOneVirtue);
 // Add a virtue
-router.post('/virtues', (req, res, next) => {
-  res.end('Create virtue.');
-});
+router.post('/virtues', ctrlUserdata.addVirtue);
 // Update a virtue
-router.put('/virtues/:id', (req, res, next) => {
-  res.end('Update virtue.');
-});
+router.put('/virtues/:id', ctrlUserdata.updateVirtue);
 // Delete a virtue
-router.delete('/virtues/:id', (req, res, next) => {
-  res.end('Delete virtue.');
-});
+router.delete('/virtues/:id', ctrlUserdata.deleteVirtue);
 
 module.exports = router;
