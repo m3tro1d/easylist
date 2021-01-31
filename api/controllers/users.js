@@ -94,5 +94,16 @@ module.exports.login = (req, res, next) => {
 }
 
 module.exports.getUser = (req, res, next) => {
-  res.end('User info');
+  User.findOne({ id: req.user.id })
+    .then(user => {
+      if (!user) {
+        return res.status(400).end('User does not exist');
+      }
+
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email
+      });
+    });
 }
