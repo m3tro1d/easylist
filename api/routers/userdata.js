@@ -23,4 +23,21 @@ router.delete('/tasks/:id', (req, res, next) => {
   res.end('Delete task.');
 });
 
+// Get virtues
+router.get('/virtues', (req, res, next) => {
+  res.end('Virtues');
+});
+// Add a virtue
+router.post('/virtues', (req, res, next) => {
+  res.end('Create virtue.');
+});
+// Update a virtue
+router.put('/virtues/:id', (req, res, next) => {
+  res.end('Update virtue.');
+});
+// Delete a virtue
+router.delete('/virtues/:id', (req, res, next) => {
+  res.end('Delete virtue.');
+});
+
 module.exports = router;
