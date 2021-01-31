@@ -6,7 +6,8 @@ const cookieParser = require('cookie-parser');
 // Connect to database
 require('./api/models/db');
 
-// Routers go here
+// API routers
+const usersRouter = require('./api/routers/users');
 
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // API routes
-// app.use...
+app.use('/api/users', usersRouter);
 
 // Pass a 404 error
 app.use((req, res, next) => {
