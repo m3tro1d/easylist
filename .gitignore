@@ -1,0 +1,9 @@
+# Packages
+node_modules/
+
+# Lockfiles
+yarn.lock
+package-lock.json
+
+# Environmental variables
+.env
