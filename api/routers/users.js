@@ -1,22 +1,16 @@
 const express = require('express');
 
 // Controller goes here
-// require...
+const ctrlUsers = require('../controllers/users');
 
 // Router for the blog API routes
 const router = express.Router();
 
 // Register a new user
-router.post('/register', (req, res, next) => {
-  res.end('Register');
-});
+router.post('/register', ctrlUsers.register);
 // Authorize a user
-router.post('/login', (req, res, next) => {
-  res.end('Login');
-});
+router.post('/login', ctrlUsers.login);
 // Get current user details
-router.get('/user', (req, res, next) => {
-  res.end('Details');
-});
+router.get('/user', ctrlUsers.getUser);
 
 module.exports = router;
