@@ -8,6 +8,7 @@ require('./api/models/db');
 
 // API routers
 const usersRouter = require('./api/routers/users');
+const userdataRouter = require('./api/routers/userdata');
 
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(cookieParser());
 
 // API routes
 app.use('/api/users', usersRouter);
+app.use('/api/userdata', userdataRouter);
 
 // Pass a 404 error
 app.use((req, res, next) => {
