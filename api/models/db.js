@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const readline = require('readline');
 
 // Initialize models
-require('./User');
 require('./Userdata');
+require('./User');
 
 const dbUri = process.env.DB_URI;
 mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology:true });

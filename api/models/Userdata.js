@@ -1,24 +1,14 @@
 const mongoose = require('mongoose');
 
 const userdataSchema = mongoose.Schema({
-  user_id: {
-    type: String,
-    required: true
-  },
-  tasks: [{
-    text: {
+  virtues: [{
+    task: {
       type: String,
-      required: true
+      'default': ''
     },
     date: {
       type: Date,
       'default': Date.now()
-    }
-  }],
-  virtues: [{
-    name: {
-      type: String,
-      required: true
     }
   }]
 });

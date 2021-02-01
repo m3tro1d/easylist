@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
   email: {
     type: String,
     required: true
@@ -13,9 +9,10 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  registration_date: {
-    type: Date,
-    'default': Date.now
+  data_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Userdata",
+    required: true
   }
 });
 
