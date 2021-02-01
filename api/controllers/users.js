@@ -17,7 +17,9 @@ module.exports.register = (req, res, next) => {
   // Check if the user exists
   User.findOne({ email })
     .then(user => {
-      if (user) return res.status(400).end('User already exists');
+      if (user) {
+        return res.status(400).end('User already exists');
+      }
     });
 
   // Create a user
