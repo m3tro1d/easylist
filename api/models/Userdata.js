@@ -13,4 +13,4 @@ const userdataSchema = mongoose.Schema({
   }]
 });
 
-mongoose.model('Userdata', userdataSchema);
+mongoose.model('Userdata', userdataSchema, 'userdata');
