@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const userdataSchema = mongoose.Schema({
   virtues: [{
+    name: {
+      type: String,
+      required: true
+    },
     task: {
       type: String,
       'default': ''
