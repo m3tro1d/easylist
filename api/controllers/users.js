@@ -22,6 +22,7 @@ module.exports.register = (req, res, next) => {
 
   // Create a user
   const newUserdata = Userdata();
+  newUserdata.virtues.push({});
   const newUser = User({
     email,
     password,
@@ -38,13 +39,16 @@ module.exports.register = (req, res, next) => {
       // Save the user and send a meaningful response
       newUser.save()
         .then(user => {
-          res.status(201).json({
-            user: {
-              id: user.id,
-              email: user.email,
-              data_id: user.data_id
-            }
-          });
+          newUserdata.save()
+            .then(userdata => {
+              res.status(201).json({
+                user: {
+                  id: user.id,
+                  email: user.email,
+                  data_id: user.data_id
+                }
+              });
+            });
         });
     })
   });
