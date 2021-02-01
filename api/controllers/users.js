@@ -61,43 +61,43 @@ module.exports.login = (req, res, next) => {
   // Check if all data is present
   if (!email || !password) {
     res.status(400).end('Please enter email and password');
-  }
-
-  // Check if the user exists
-  User.findOne({ email })
-    .then(user => {
-      if (!user) {
-        return res.status(400).end('User does not exist');
-      }
-
-      // Validate user's password
-      bcrypt.compare(password, user.password)
-        .then(isMatch => {
-          if (!isMatch) {
-            res.status(400).end('Invalid credentials');
-          }
-
-          // Create a token
-          jwt.sign(
-            { id: user.id },
-            process.env.JWT_SECRET,
-            (err, token) => {
-              if (err) {
-                throw err;
+  } else {
+    // Check if the user exists
+    User.findOne({ email })
+      .then(user => {
+        if (!user) {
+          return res.status(400).end('User does not exist');
+        } else {
+          // Validate user's password
+          bcrypt.compare(password, user.password)
+            .then(isMatch => {
+              if (!isMatch) {
+                res.status(400).end('Invalid credentials');
+              } else {
+                // Create a token
+                jwt.sign(
+                  { id: user.id },
+                  process.env.JWT_SECRET,
+                  (err, token) => {
+                    if (err) {
+                      throw err;
+                    }
+                    // Respond with the token and user info
+                    res.json({
+                      token,
+                      user: {
+                        id: user.id,
+                        email: user.email,
+                        data_id: user.data_id
+                      }
+                    });
+                  }
+                );
               }
-              // Respond with the token and user info
-              res.json({
-                token,
-                user: {
-                  id: user.id,
-                  email: user.email,
-                  data_id: user.data_id
-                }
-              });
-            }
-          );
-        });
-    });
+            });
+        }
+      });
+  }
 }
 
 module.exports.getUser = (req, res, next) => {
