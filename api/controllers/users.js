@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
+const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
 
 module.exports.register = (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
 
   // Check if all data is present
-  if (!name || !email || !password) {
+  if (!email || !password) {
     res.status(400).end('Please enter all fields');
   }
 
@@ -20,10 +21,11 @@ module.exports.register = (req, res, next) => {
     });
 
   // Create a user
+  const newUserdata = Userdata();
   const newUser = User({
-    name,
     email,
-    password
+    password,
+    data_id: newUserdata.id
   });
 
   // Hash user's password
@@ -39,8 +41,8 @@ module.exports.register = (req, res, next) => {
           res.status(201).json({
             user: {
               id: user.id,
-              name: user.name,
-              email: user.email
+              email: user.email,
+              data_id: user.data_id
             }
           });
         });
@@ -83,8 +85,8 @@ module.exports.login = (req, res, next) => {
                 token,
                 user: {
                   id: user.id,
-                  name: user.name,
-                  email: user.email
+                  email: user.email,
+                  data_id: user.data_id
                 }
               });
             }
@@ -102,8 +104,8 @@ module.exports.getUser = (req, res, next) => {
 
       res.json({
         id: user.id,
-        name: user.name,
-        email: user.email
+        email: user.email,
+        data_id: user.data_id
       });
     });
 }
