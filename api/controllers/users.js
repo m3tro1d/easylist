@@ -24,7 +24,6 @@ module.exports.register = (req, res, next) => {
 
   // Create a user
   const newUserdata = Userdata();
-  newUserdata.virtues.push({});
   const newUser = User({
     email,
     password,
