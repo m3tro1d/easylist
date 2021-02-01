@@ -10,13 +10,13 @@ module.exports.getVirtues = (req, res, next) => {
       // Check if user exists
       if (!user) {
         res.status(400).end('User does not exist');
+      } else {
+        // Find and return user's virtues
+        Userdata.findById(user.data_id)
+          .then(userdata => {
+            res.json(userdata.virtues);
+          });
       }
-
-      // Find and return user's virtues
-      Userdata.findById(user.data_id)
-        .then(userdata => {
-          res.json(userdata.virtues);
-        });
     });
 }
 
