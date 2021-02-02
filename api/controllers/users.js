@@ -33,9 +33,9 @@ module.exports.register = (req, res, next) => {
                 throw err
               }
               sendConfirmation(
-                `easylist NOREPLY <${process.env.VER_ADDRESS}>`,
+                `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
                 email,
-                'Confirm registration on easylist',
+                'Confirm your registration on easylist',
                 `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
                 (err, info) => {
                   if (err) {
