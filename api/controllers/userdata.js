@@ -9,12 +9,12 @@ module.exports.getVirtues = (req, res, next) => {
     .then(user => {
       // Check if user exists
       if (!user) {
-        res.status(400).end('User does not exist');
+        return res.status(400).end('User does not exist');
       } else {
         // Find and return user's virtues
         Userdata.findById(user.data_id)
           .then(userdata => {
-            res.json(userdata.virtues);
+            return res.json(userdata.virtues);
           });
       }
     });
@@ -25,14 +25,14 @@ module.exports.addVirtue = (req, res, next) => {
 
   // Check if all data is present
   if (!name || !task) {
-    res.status(400).end('Please enter all fields');
+    return res.status(400).end('Please enter all fields');
   } else {
     // Find the user
     User.findById(req.user.id)
       .then(user => {
         // Check if user exists
         if (!user) {
-          res.status(400).end('User does not exist');
+          return res.status(400).end('User does not exist');
         } else {
           // Find user's data and add a virtue
           Userdata.findById(user.data_id)
@@ -41,7 +41,7 @@ module.exports.addVirtue = (req, res, next) => {
               userdata.virtues.push(newVirtue);
               userdata.save()
                 .then(createdUserdata => {
-                  res.status(201).json(
+                  return res.status(201).json(
                     createdUserdata.virtues[createdUserdata.virtues.length - 1]
                   );
                 });
@@ -89,5 +89,10 @@ module.exports.updateVirtue = (req, res, next) => {
 }
 
 module.exports.deleteVirtue = (req, res, next) => {
- res.end('Delete virtue');
+  // Remove the virtue and save the data
+  const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
+  req.userdata.save()
+    .then(changedData => {
+      return res.status(204).end(null);
+    });
 }
