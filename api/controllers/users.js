@@ -4,21 +4,8 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
 
-// Set up models
 const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
-
-// Set up email client
-const emailer = nodemailer.createTransport({
-  pool: true,
-  host: 'smtp.mail.ru',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.VER_ADDRESS,
-    pass: process.env.VER_PASSWORD
-  }
-});
 
 module.exports.register = (req, res, next) => {
   const { email, password } = req.body;
@@ -41,29 +28,24 @@ module.exports.register = (req, res, next) => {
               throw err;
             }
             // Get the confirmation token
-            jwt.sign(
-              { email: email, password: hash },
-              process.env.VER_JWT_SECRET,
-              { expiresIn: '1d' },
-              (err, token) => {
-                if (err) {
-                  throw err
-                }
-                const mailOptions = {
-                  from: `easylist NOREPLY <${process.env.VER_ADDRESS}>`,
-                  to: email,
-                  subject: 'Confirm registration on easylist',
-                  text: `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`
-                };
-                emailer.sendMail(mailOptions, (err, info) => {
+            jwt.sign({ email: email, password: hash }, process.env.VER_JWT_SECRET, { expiresIn: '1d' }, (err, token) => {
+              if (err) {
+                throw err
+              }
+              sendConfirmation(
+                `easylist NOREPLY <${process.env.VER_ADDRESS}>`,
+                email,
+                'Confirm registration on easylist',
+                `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
+                (err, info) => {
                   if (err) {
                     return res.status(400).end('Registration failed');
+                  } else {
+                    return res.status(201).end('Confirmation email has been sent');
                   }
-                  return res.end('Confirmation email has been sent');
                 });
-              }
-            );
-          })
+            });
+          });
         });
       }
     });
@@ -103,7 +85,6 @@ module.exports.registerConfirm = (req, res, next) => {
         }
       });
   } catch(e) {
-    console.log(e);
     return res.status(400).end('Token is invalid');
   }
 }
@@ -114,6 +95,7 @@ module.exports.login = (req, res, next) => {
   // Check if all data is present
   if (!email || !password)
     return res.status(400).end('Please enter email and password');
+
   // Check if the user exists
   User.findOne({ email })
     .then(user => {
@@ -164,4 +146,26 @@ module.exports.getUser = (req, res, next) => {
         });
       }
     });
+}
+
+
+// Some useful functions
+function sendConfirmation(from, to, subject, text, callback) {
+  // Set up the mail client
+  const emailer = nodemailer.createTransport({
+    pool: true,
+    host: 'smtp.mail.ru',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.VER_ADDRESS,
+      pass: process.env.VER_PASSWORD
+    }
+  });
+
+  // Prepare the message
+  const mailOptions = { from, to, subject, text };
+
+  // Send the message
+  emailer.sendMail(mailOptions, callback);
 }
