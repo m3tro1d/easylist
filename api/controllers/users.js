@@ -1,10 +1,24 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 
+// Set up models
 const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
+
+// Set up email client
+const emailer = nodemailer.createTransport({
+  pool: true,
+  host: 'smtp.mail.ru',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.VER_ADDRESS,
+    pass: process.env.VER_PASSWORD
+  }
+});
 
 module.exports.register = (req, res, next) => {
   const { email, password } = req.body;
@@ -37,20 +51,29 @@ module.exports.register = (req, res, next) => {
         throw err;
       }
       newUser.password = hash;
-      // Save the user and send a meaningful response
-      newUser.save()
-        .then(user => {
-          newUserdata.save()
-            .then(userdata => {
-              return res.status(201).json({
-                user: {
-                  id: user.id,
-                  email: user.email,
-                  data_id: user.data_id
-                }
-              });
-            });
-        });
+      // Get the confirmation token
+      jwt.sign(
+        newUser,
+        process.env.VER_JWT_SECRET,
+        { expiresIn: '1d' },
+        (err, token) => {
+          if (err) {
+            throw err
+          }
+          const mailOptions = {
+            from: `easylist NOREPLY <${process.env.VER_ADDRESS}>`,
+            to: newUser.email,
+            subject: 'Confirm registration on easylist',
+            text: `To confirm your registration on easylist please click this link:\nhttps://${req.hostname}/api/users/register/confirm?token=${token}`
+          };
+          emailer.sendMail(mailOptions, (err, info) => {
+            if (err) {
+              return res.status(400).end('Registration failed');
+            }
+            return res.end('Confirmation email has been sent');
+          })
+        }
+      );
     })
   });
 }
