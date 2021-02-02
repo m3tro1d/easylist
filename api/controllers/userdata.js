@@ -10,12 +10,13 @@ module.exports.getVirtues = (req, res, next) => {
       // Check if user exists
       if (!user) {
         return res.status(400).end('User does not exist');
+      } else {
+        // Find and return user's virtues
+        Userdata.findById(user.data_id)
+          .then(userdata => {
+            return res.json(userdata.virtues);
+          });
       }
-      // Find and return user's virtues
-      Userdata.findById(user.data_id)
-        .then(userdata => {
-          return res.json(userdata.virtues);
-        });
     });
 }
 
@@ -25,27 +26,29 @@ module.exports.addVirtue = (req, res, next) => {
   // Check if all data is present
   if (!name || !task) {
     return res.status(400).end('Please enter all fields');
-  }
-  // Find the user
-  User.findById(req.user.id)
-    .then(user => {
-      // Check if user exists
-      if (!user) {
-        return res.status(400).end('User does not exist');
-      }
-      // Find user's data and add a virtue
-      Userdata.findById(user.data_id)
-        .then(userdata => {
-          const newVirtue = { name, task }
-          userdata.virtues.push(newVirtue);
-          userdata.save()
-            .then(createdUserdata => {
-              return res.status(201).json(
-                createdUserdata.virtues[createdUserdata.virtues.length - 1]
-              );
+  } else {
+    // Find the user
+    User.findById(req.user.id)
+      .then(user => {
+        // Check if user exists
+        if (!user) {
+          return res.status(400).end('User does not exist');
+        } else {
+          // Find user's data and add a virtue
+          Userdata.findById(user.data_id)
+            .then(userdata => {
+              const newVirtue = { name, task }
+              userdata.virtues.push(newVirtue);
+              userdata.save()
+                .then(createdUserdata => {
+                  return res.status(201).json(
+                    createdUserdata.virtues[createdUserdata.virtues.length - 1]
+                  );
+                });
             });
-        });
-    });
+        }
+      });
+  }
 }
 
 module.exports.getVirtueById = (req, res, next) => {
@@ -54,22 +57,23 @@ module.exports.getVirtueById = (req, res, next) => {
     .then(user => {
       if (!user) {
         return res.status(400).end('User does not exist');
+      } else {
+        // Find user's data
+        Userdata.findById(user.data_id)
+          .then(userdata => {
+            // Find the needed virtue
+            const index = userdata.virtues.findIndex(el => el.id === req.params.id);
+            // Check if it exists
+            if (index === -1) {
+              return res.status(404).end('Virtue not found');
+            }
+            // Pass all the information to the next controller
+            req.virtue_index = index;
+            req.userdata = userdata;
+            next();
+          });
+      });
       }
-      // Find user's data
-      Userdata.findById(user.data_id)
-        .then(userdata => {
-          // Find the needed virtue
-          const index = userdata.virtues.findIndex(el => el.id === req.params.id);
-          // Check if it exists
-          if (index === -1) {
-            return res.status(404).end('Virtue not found');
-          }
-          // Pass all the information to the next controller
-          req.virtue_index = index;
-          req.userdata = userdata;
-          next();
-        });
-    });
 }
 
 module.exports.updateVirtue = (req, res, next) => {
