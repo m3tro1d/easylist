@@ -36,24 +36,15 @@ module.exports.register = (req, res, next) => {
       }
     });
 
-  // Create a user
-  const newUserdata = Userdata();
-  const newUser = User({
-    email,
-    password,
-    data_id: newUserdata.id
-  });
-
   // Hash user's password
   bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(newUser.password, salt, (err, hash) => {
+    bcrypt.hash(password, salt, (err, hash) => {
       if (err) {
         throw err;
       }
-      newUser.password = hash;
       // Get the confirmation token
       jwt.sign(
-        newUser,
+        { email: email, password: hash },
         process.env.VER_JWT_SECRET,
         { expiresIn: '1d' },
         (err, token) => {
@@ -62,7 +53,7 @@ module.exports.register = (req, res, next) => {
           }
           const mailOptions = {
             from: `easylist NOREPLY <${process.env.VER_ADDRESS}>`,
-            to: newUser.email,
+            to: email,
             subject: 'Confirm registration on easylist',
             text: `To confirm your registration on easylist please click this link:\nhttps://${req.hostname}/api/users/register/confirm?token=${token}`
           };
@@ -79,15 +70,27 @@ module.exports.register = (req, res, next) => {
 }
 
 module.exports.registerConfirm = (req, res, next) => {
+  // Check if token is present
+  if (!req.query.token) {
+    return res.status(400).end('No token provided');
+  }
+
   try {
     // Verify the token and save the user
-    const newUser = jwt.verify(req.params.token, process.env.VER_JWT_SECRET);
+    const newUserPlain = jwt.verify(req.query.token, process.env.VER_JWT_SECRET);
+    const newUserdata = Userdata();
+    const newUser = User({
+      email: newUserPlain.email,
+      password: newUserPlain.password,
+      data_id: newUserdata.id
+    });
     newUser.save()
       .then(user => {
         // Redirect to the index page
         return res.redirect(302, '/');
       });
   } catch(e) {
+    console.log(e);
     return res.status(400).end('Token is invalid');
   }
 }
