@@ -77,7 +77,7 @@ module.exports.updateVirtue = (req, res, next) => {
   req.userdata.virtues[req.virtue_index] = {
     name: req.body.name,
     task: req.body.task,
-    date: req.body.date
+    date: req.body.date || Date.now()
   };
   req.userdata.save()
     .then(changedData => {
