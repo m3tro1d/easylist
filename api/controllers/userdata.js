@@ -72,8 +72,8 @@ module.exports.getVirtueById = (req, res, next) => {
             req.userdata = userdata;
             next();
           });
-      });
       }
+    });
 }
 
 module.exports.updateVirtue = (req, res, next) => {
