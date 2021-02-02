@@ -27,7 +27,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/userdata', userdataRouter);
 
 // Provide static assets route in production
-if (process.env.NODE_END === 'production') {
+if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
   app.get('/', (req, res, next) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
