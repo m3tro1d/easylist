@@ -10,13 +10,12 @@ module.exports.getVirtues = (req, res, next) => {
       // Check if user exists
       if (!user) {
         return res.status(400).end('User does not exist');
-      } else {
-        // Find and return user's virtues
-        Userdata.findById(user.data_id)
-          .then(userdata => {
-            return res.json(userdata.virtues);
-          });
       }
+      // Find and return user's virtues
+      Userdata.findById(user.data_id)
+        .then(userdata => {
+          return res.json(userdata.virtues);
+        });
     });
 }
 
@@ -26,29 +25,27 @@ module.exports.addVirtue = (req, res, next) => {
   // Check if all data is present
   if (!name || !task) {
     return res.status(400).end('Please enter all fields');
-  } else {
-    // Find the user
-    User.findById(req.user.id)
-      .then(user => {
-        // Check if user exists
-        if (!user) {
-          return res.status(400).end('User does not exist');
-        } else {
-          // Find user's data and add a virtue
-          Userdata.findById(user.data_id)
-            .then(userdata => {
-              const newVirtue = { name, task }
-              userdata.virtues.push(newVirtue);
-              userdata.save()
-                .then(createdUserdata => {
-                  return res.status(201).json(
-                    createdUserdata.virtues[createdUserdata.virtues.length - 1]
-                  );
-                });
-            });
-        }
-      });
   }
+  // Find the user
+  User.findById(req.user.id)
+    .then(user => {
+      // Check if user exists
+      if (!user) {
+        return res.status(400).end('User does not exist');
+      }
+      // Find user's data and add a virtue
+      Userdata.findById(user.data_id)
+        .then(userdata => {
+          const newVirtue = { name, task }
+          userdata.virtues.push(newVirtue);
+          userdata.save()
+            .then(createdUserdata => {
+              return res.status(201).json(
+                createdUserdata.virtues[createdUserdata.virtues.length - 1]
+              );
+            });
+        });
+    });
 }
 
 module.exports.getVirtueById = (req, res, next) => {
