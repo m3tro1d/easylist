@@ -55,6 +55,12 @@ module.exports.register = (req, res, next) => {
   });
 }
 
+module.exports.registerConfirm = (req, res, next) => {
+  // Verify the token from the params
+  // Save the user
+  res.end('Register confirmation');
+}
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 

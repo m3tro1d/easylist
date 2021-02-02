@@ -6,8 +6,10 @@ const auth = require('../../middleware/auth');
 // Router for the blog API routes
 const router = express.Router();
 
-// Register a new user
+// Request registration
 router.post('/register', ctrlUsers.register);
+// Verify registration
+router.get('/register/confirm', ctrlUsers.registerConfirm);
 // Authorize a user
 router.post('/login', ctrlUsers.login);
 // Get current user details
