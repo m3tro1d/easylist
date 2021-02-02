@@ -5,7 +5,7 @@ module.exports= (req, res, next) => {
 
   // Check if token is present
   if (!token) {
-    res.status(401).end('No token, authorization denied');
+    return res.status(401).end('No token, authorization denied');
   }
 
   try {
@@ -13,6 +13,6 @@ module.exports= (req, res, next) => {
     req.user = decoded;
     next();
   } catch(e) {
-    res.status(400).end('Token is invalid');
+    return res.status(400).end('Token is invalid');
   }
 }
