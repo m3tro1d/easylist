@@ -51,8 +51,41 @@ module.exports.addVirtue = (req, res, next) => {
   }
 }
 
+module.exports.getVirtueById = (req, res, next) => {
+  // Find the user
+  User.findById(req.user.id)
+    .then(user => {
+      if (!user) {
+        return res.status(400).end('User does not exist');
+      }
+      // Find user's data
+      Userdata.findById(user.data_id)
+        .then(userdata => {
+          // Find the needed virtue
+          const index = userdata.virtues.findIndex(el => el.id === req.params.id);
+          // Check if it exists
+          if (index === -1) {
+            return res.status(404).end('Virtue not found');
+          }
+          // Pass all the information to the next controller
+          req.virtue_index = index;
+          req.userdata = userdata;
+          next();
+        });
+    });
+}
+
 module.exports.updateVirtue = (req, res, next) => {
-  res.end('Update virtue');
+  // Update the virtue and save it
+  req.userdata.virtues[req.virtue_index] = {
+    name: req.body.name,
+    task: req.body.task,
+    date: req.body.date
+  };
+  req.userdata.save()
+    .then(changedData => {
+      return res.json(changedData.virtues[req.virtue_index]);
+    });
 }
 
 module.exports.deleteVirtue = (req, res, next) => {

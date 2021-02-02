@@ -12,8 +12,8 @@ router.get('/virtues', auth, ctrlUserdata.getVirtues);
 // Add user's virtue
 router.post('/virtues', auth, ctrlUserdata.addVirtue);
 // Update user's virtue
-router.put('/virtues/:id', auth, ctrlUserdata.updateVirtue);
+router.put('/virtues/:id', auth, ctrlUserdata.getVirtueById, ctrlUserdata.updateVirtue);
 // Delete user's virtue
-router.delete('/virtues/:id', auth, ctrlUserdata.deleteVirtue);
+router.delete('/virtues/:id', auth, ctrlUserdata.getVirtueById, ctrlUserdata.deleteVirtue);
 
 module.exports = router;
