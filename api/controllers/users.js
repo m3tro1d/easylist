@@ -55,14 +55,14 @@ module.exports.register = (req, res, next) => {
             from: `easylist NOREPLY <${process.env.VER_ADDRESS}>`,
             to: email,
             subject: 'Confirm registration on easylist',
-            text: `To confirm your registration on easylist please click this link:\nhttps://${req.hostname}/api/users/register/confirm?token=${token}`
+            text: `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`
           };
           emailer.sendMail(mailOptions, (err, info) => {
             if (err) {
               return res.status(400).end('Registration failed');
             }
             return res.end('Confirmation email has been sent');
-          })
+          });
         }
       );
     })
@@ -76,8 +76,18 @@ module.exports.registerConfirm = (req, res, next) => {
   }
 
   try {
-    // Verify the token and save the user
+    // Verify the token
     const newUserPlain = jwt.verify(req.query.token, process.env.VER_JWT_SECRET);
+
+    // Check if the user has already been registered
+    User.find({ email: newUserPlain.email })
+      .then(user => {
+        if (user) {
+          return res.status(400).end('User already registered');
+        }
+      });
+
+    // Save the user and user's data
     const newUserdata = Userdata();
     const newUser = User({
       email: newUserPlain.email,
@@ -86,8 +96,11 @@ module.exports.registerConfirm = (req, res, next) => {
     });
     newUser.save()
       .then(user => {
-        // Redirect to the index page
-        return res.redirect(302, '/');
+        newUserdata.save()
+          .then(userdata => {
+            // Redirect to the index page
+            return res.redirect(302, '/');
+          });
       });
   } catch(e) {
     console.log(e);
