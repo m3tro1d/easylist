@@ -11,7 +11,6 @@ require('./api/models/db');
 const usersRouter = require('./api/routers/users');
 const userdataRouter = require('./api/routers/userdata');
 
-
 const app = express();
 
 // App settings
