@@ -80,7 +80,7 @@ module.exports.registerConfirm = (req, res, next) => {
     const newUserPlain = jwt.verify(req.query.token, process.env.VER_JWT_SECRET);
 
     // Check if the user has already been registered
-    User.find({ email: newUserPlain.email })
+    User.findOne({ email: newUserPlain.email })
       .then(user => {
         if (user) {
           return res.status(400).end('User already registered');
