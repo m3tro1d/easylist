@@ -56,9 +56,17 @@ module.exports.register = (req, res, next) => {
 }
 
 module.exports.registerConfirm = (req, res, next) => {
-  // Verify the token from the params
-  // Save the user
-  res.end('Register confirmation');
+  try {
+    // Verify the token and save the user
+    const newUser = jwt.verify(req.params.token, process.env.VER_JWT_SECRET);
+    newUser.save()
+      .then(user => {
+        // Redirect to the index page
+        return res.redirect(302, '/');
+      });
+  } catch(e) {
+    return res.status(400).end('Token is invalid');
+  }
 }
 
 module.exports.login = (req, res, next) => {
