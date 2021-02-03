@@ -93,29 +93,29 @@ module.exports.findUserById = (req, res, next) => {
     });
 }
 
-// Finds the virtue from req.user.id and req.params.id and sets the
+// Finds the virtue from req.user and req.params.id and sets the
 // corresponding req.userdata and req.virtue_index
 module.exports.getVirtueById = (req, res, next) => {
-  // Find the user
-  User.findById(req.user.id)
-    .then(user => {
-      if (!user) {
-        return res.status(400).end('User does not exist');
-      } else {
-        // Find user's data
-        Userdata.findById(user.data_id)
-          .then(userdata => {
-            // Find the needed virtue
-            const index = userdata.virtues.findIndex(el => el.id === req.params.id);
-            // Check if it exists
-            if (index === -1) {
-              return res.status(404).end('Virtue not found');
-            }
-            // Pass all the information to the next controller
-            req.virtue_index = index;
-            req.userdata = userdata;
-            next();
+  Userdata
+    .findById(req.user.data_id)
+    .exec((err, userdata) => {
+      if (!userdata) { // Check if userdata is found
+        sendJsonResponse(res, 404, {
+          message: 'Userdata not found'
+        });
+      } else if (err) { // Check for error
+        sendJsonResponse(res, 400, err);
+      } else { // Pass to the next controller
+        const index = userdata.virtues.findIndex(el => el.id === req.params.id);
+        if (index === -1) { // Check if the virtue is present
+          sendJsonResponse(res, 404, {
+            message: 'Virtue not found'
           });
+        } else { // Pass all the information
+          req.virtue_index = index;
+          req.userdata = userdata;
+          next();
+        }
       }
     });
 }
