@@ -7,3 +7,10 @@ package-lock.json
 
 # Environmental variables
 .env
+
+# ESLint settings
+.eslintrc.js
+.eslintrc.cjs
+.eslintrc.yaml
+.eslintrc.yml
+.eslintrc.json
