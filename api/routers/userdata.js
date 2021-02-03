@@ -8,12 +8,12 @@ const auth = require('../../middleware/auth');
 const router = express.Router();
 
 // Get user's virtues
-router.get('/virtues', auth, ctrlUserdata.getVirtues);
+router.get('/virtues', auth, ctrlUserdata.getUserById, ctrlUserdata.getVirtues);
 // Add user's virtue
-router.post('/virtues', auth, ctrlUserdata.addVirtue);
+router.post('/virtues', auth, ctrlUserdata.getUserById, ctrlUserdata.addVirtue);
 // Update user's virtue
-router.put('/virtues/:id', auth, ctrlUserdata.getVirtueById, ctrlUserdata.updateVirtue);
+router.put('/virtues/:id', auth, ctrlUserdata.getUserById, ctrlUserdata.getVirtueById, ctrlUserdata.updateVirtue);
 // Delete user's virtue
-router.delete('/virtues/:id', auth, ctrlUserdata.getVirtueById, ctrlUserdata.deleteVirtue);
+router.delete('/virtues/:id', auth, ctrlUserdata.getUserById, ctrlUserdata.getVirtueById, ctrlUserdata.deleteVirtue);
 
 module.exports = router;

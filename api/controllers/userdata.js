@@ -76,7 +76,7 @@ module.exports.deleteVirtue = (req, res, next) => {
 
 // Userdata-specific middleware
 // Finds the user from req.user.id and sets req.user
-module.exports.findUserById = (req, res, next) => {
+module.exports.getUserById = (req, res, next) => {
   User
     .findById(req.user.id)
     .exec((err, user) => {
