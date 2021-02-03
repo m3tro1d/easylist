@@ -5,46 +5,47 @@ const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
 
 module.exports.getVirtues = (req, res, next) => {
-  User.findById(req.user.id)
-    .then(user => {
-      // Check if user exists
-      if (!user) {
-        return res.status(400).end('User does not exist');
-      } else {
-        // Find and return user's virtues
-        Userdata.findById(user.data_id)
-          .then(userdata => {
-            return res.json(userdata.virtues);
-          });
+  // Find and return user's virtues
+  Userdata
+    .findById(req.user.data_id)
+    .exec((err, userdata) => {
+      if (!userdata) { // Check if userdata is found
+        sendJsonResponse(res, 404, {
+          message: 'Userdata not found'
+        });
+      } else { // Send the virtues
+        sendJsonResponse(res, 200, userdata.virtues);
       }
     });
 }
 
 module.exports.addVirtue = (req, res, next) => {
   const { name, task } = req.body;
-
-  // Check if all data is present
-  if (!name || !task) {
+  if (!name || !task) { // Check if all data is present
     return res.status(400).end('Please enter all fields');
-  } else {
-    // Find the user
-    User.findById(req.user.id)
-      .then(user => {
-        // Check if user exists
-        if (!user) {
-          return res.status(400).end('User does not exist');
-        } else {
-          // Find user's data and add a virtue
-          Userdata.findById(user.data_id)
-            .then(userdata => {
-              const newVirtue = { name, task }
-              userdata.virtues.push(newVirtue);
-              userdata.save()
-                .then(createdUserdata => {
-                  return res.status(201).json(
-                    createdUserdata.virtues[createdUserdata.virtues.length - 1]
-                  );
-                });
+  } else { // Find user's data and add a virtue
+    Userdata
+      .findById(user.data_id)
+      .exec((err, userdata) => {
+        if (!userdata) { // Check if userdata is found
+          sendJsonResponse(res, 404 {
+            message: 'Userdata not found'
+          });
+        } else if (err) { // Check for error
+          sendJsonResponse(res, 400, err);
+        } else { // Add virtue and save the userdata
+          const newVirtue = { name, task };
+          userdata.virtues.push(newVirtue);
+          userdata
+            .save()
+            .exec((err, changedData) => {
+              if (err) { // Check for error
+                sendJsonResponse(res, 400, err);
+              } else { // Send the created virtue
+                sendJsonResponse(res, 201,
+                  changedData.virtues[changedData.virtues.length - 1]
+                );
+              }
             });
         }
       });
@@ -52,24 +53,39 @@ module.exports.addVirtue = (req, res, next) => {
 }
 
 module.exports.updateVirtue = (req, res, next) => {
-  // Update the virtue and save it
-  req.userdata.virtues[req.virtue_index] = {
-    name: req.body.name,
-    task: req.body.task,
-    date: req.body.date || Date.now()
-  };
-  req.userdata.save()
-    .then(changedData => {
-      return res.json(changedData.virtues[req.virtue_index]);
+  const { name, task, date } = req.body;
+  if (!name || !task) {   // Check if all data is present
+    sendJsonResponse(res, 400, {
+      message: 'Please provide name and task'
     });
+  } else {       // Update the virtue and save it
+    req.userdata.virtues[req.virtue_index] = {
+      name: name,
+      task: task,
+      date: date || Date.now()
+    };
+    req.userdata
+      .save()
+      .exec((err, savedData) => {
+        if (err) { // Check for error
+          sendJsonResponse(res, 400, err);
+        } else { // Send the updated virtue
+          sendJsonResponse(res, 200, savedData.virtues[req.virtue_index]);
+        }
+      });
+  }
 }
 
 module.exports.deleteVirtue = (req, res, next) => {
-  // Remove the virtue and save the data
   const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
-  req.userdata.save()
-    .then(changedData => {
-      return res.status(204).end(null);
+  req.userdata
+    .save()
+    .exec((err, savedData) => {
+      if (err) { // Check for error
+        sendJsonResponse(res, 400, err);
+      } else { // Send the null response on successful deletion
+        sendJsonResponse(res, 204, null);
+      }
     });
 }
 
@@ -126,4 +142,3 @@ module.exports.getVirtueById = (req, res, next) => {
 function sendJsonResponse(res, status, content) {
   res.status(status).json(content);
 }
-
