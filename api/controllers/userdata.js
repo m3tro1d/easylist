@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 
 const Userdata = mongoose.model('Userdata');
-const User = mongoose.model('User');
 
 module.exports.getVirtues = (req, res, next) => {
   // Find and return user's virtues
@@ -17,7 +16,7 @@ module.exports.getVirtues = (req, res, next) => {
         sendJsonResponse(res, 200, userdata.virtues);
       }
     });
-}
+};
 
 module.exports.addVirtue = (req, res, next) => {
   const { name, task } = req.body;
@@ -37,22 +36,22 @@ module.exports.addVirtue = (req, res, next) => {
           const newVirtue = { name, task };
           userdata.virtues.push(newVirtue);
           userdata.save((err, changedData) => {
-              if (err) { // Check for error
-                sendJsonResponse(res, 400, err);
-              } else { // Send the created virtue
-                sendJsonResponse(res, 201,
-                  changedData.virtues[changedData.virtues.length - 1]
-                );
-              }
-            });
+            if (err) { // Check for error
+              sendJsonResponse(res, 400, err);
+            } else { // Send the created virtue
+              sendJsonResponse(res, 201,
+                changedData.virtues[changedData.virtues.length - 1]
+              );
+            }
+          });
         }
       });
   }
-}
+};
 
 module.exports.getOneVirtue = (req, res, next) => {
   sendJsonResponse(res, 200, req.userdata.virtues[req.virtue_index]);
-}
+};
 
 module.exports.updateVirtue = (req, res, next) => {
   const { name, task, date } = req.body;
@@ -67,25 +66,25 @@ module.exports.updateVirtue = (req, res, next) => {
       date: date || Date.now()
     };
     req.userdata.save((err, savedData) => {
-        if (err) { // Check for error
-          sendJsonResponse(res, 400, err);
-        } else { // Send the updated virtue
-          sendJsonResponse(res, 200, savedData.virtues[req.virtue_index]);
-        }
-      });
-  }
-}
-
-module.exports.deleteVirtue = (req, res, next) => {
-  const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
-  req.userdata.save((err, savedData) => {
       if (err) { // Check for error
         sendJsonResponse(res, 400, err);
-      } else { // Send the null response on successful deletion
-        sendJsonResponse(res, 204, null);
+      } else { // Send the updated virtue
+        sendJsonResponse(res, 200, savedData.virtues[req.virtue_index]);
       }
     });
-}
+  }
+};
+
+module.exports.deleteVirtue = (req, res, next) => {
+  req.userdata.virtues.splice(req.virtue_index, 1);
+  req.userdata.save((err, savedData) => {
+    if (err) { // Check for error
+      sendJsonResponse(res, 400, err);
+    } else { // Send the null response on successful deletion
+      sendJsonResponse(res, 204, null);
+    }
+  });
+};
 
 
 // Some useful functions
