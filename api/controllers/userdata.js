@@ -36,8 +36,7 @@ module.exports.addVirtue = (req, res, next) => {
         } else { // Add virtue and save the userdata
           const newVirtue = { name, task };
           userdata.virtues.push(newVirtue);
-          userdata
-            .save((err, changedData) => {
+          userdata.save((err, changedData) => {
               if (err) { // Check for error
                 sendJsonResponse(res, 400, err);
               } else { // Send the created virtue
@@ -67,8 +66,7 @@ module.exports.updateVirtue = (req, res, next) => {
       task: task,
       date: date || Date.now()
     };
-    req.userdata
-      .save((err, savedData) => {
+    req.userdata.save((err, savedData) => {
         if (err) { // Check for error
           sendJsonResponse(res, 400, err);
         } else { // Send the updated virtue
@@ -80,8 +78,7 @@ module.exports.updateVirtue = (req, res, next) => {
 
 module.exports.deleteVirtue = (req, res, next) => {
   const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
-  req.userdata
-    .save((err, savedData) => {
+  req.userdata.save((err, savedData) => {
       if (err) { // Check for error
         sendJsonResponse(res, 400, err);
       } else { // Send the null response on successful deletion
