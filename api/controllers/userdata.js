@@ -51,6 +51,50 @@ module.exports.addVirtue = (req, res, next) => {
   }
 }
 
+module.exports.updateVirtue = (req, res, next) => {
+  // Update the virtue and save it
+  req.userdata.virtues[req.virtue_index] = {
+    name: req.body.name,
+    task: req.body.task,
+    date: req.body.date || Date.now()
+  };
+  req.userdata.save()
+    .then(changedData => {
+      return res.json(changedData.virtues[req.virtue_index]);
+    });
+}
+
+module.exports.deleteVirtue = (req, res, next) => {
+  // Remove the virtue and save the data
+  const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
+  req.userdata.save()
+    .then(changedData => {
+      return res.status(204).end(null);
+    });
+}
+
+
+// Userdata-specific middleware
+// Finds the user from req.user.id and sets req.user
+module.exports.findUserById = (req, res, next) => {
+  User
+    .findById(req.user.id)
+    .exec((err, user) => {
+      if (!user) { // Check if the user is found
+        sendJsonResponse(res, 404, {
+          message: 'User not found'
+        });
+      } else if (err) { // Check for error
+        sendJsonResponse(res, 400, err);
+      } else { // Pass to the next controller
+        req.user = user;
+        next();
+      }
+    });
+}
+
+// Finds the virtue from req.user.id and req.params.id and sets the
+// corresponding req.userdata and req.virtue_index
 module.exports.getVirtueById = (req, res, next) => {
   // Find the user
   User.findById(req.user.id)
@@ -76,24 +120,10 @@ module.exports.getVirtueById = (req, res, next) => {
     });
 }
 
-module.exports.updateVirtue = (req, res, next) => {
-  // Update the virtue and save it
-  req.userdata.virtues[req.virtue_index] = {
-    name: req.body.name,
-    task: req.body.task,
-    date: req.body.date || Date.now()
-  };
-  req.userdata.save()
-    .then(changedData => {
-      return res.json(changedData.virtues[req.virtue_index]);
-    });
+
+// Some useful functions
+// Ends res with given status and json content
+function sendJsonResponse(res, status, content) {
+  res.status(status).json(content);
 }
 
-module.exports.deleteVirtue = (req, res, next) => {
-  // Remove the virtue and save the data
-  const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
-  req.userdata.save()
-    .then(changedData => {
-      return res.status(204).end(null);
-    });
-}
