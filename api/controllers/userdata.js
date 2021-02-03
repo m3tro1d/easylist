@@ -56,14 +56,14 @@ module.exports.getOneVirtue = (req, res, next) => {
 
 module.exports.updateVirtue = (req, res, next) => {
   const { name, task, date } = req.body;
-  if (!name || !task) {   // Check if all data is present
+  if (!name && !task && !date) {   // Check if all data is present
     sendJsonResponse(res, 400, {
       message: 'Please provide name and task'
     });
   } else {       // Update the virtue and save it
     req.userdata.virtues[req.virtue_index] = {
-      name: name,
-      task: task,
+      name: name || req.userdata.virtues[req.virtue_index].name,
+      task: task || req.userdata.virtues[req.virtue_index].task,
       date: date || Date.now()
     };
     req.userdata.save((err, savedData) => {
