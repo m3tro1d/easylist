@@ -163,27 +163,16 @@ module.exports.login = (req, res, next) => {
 }
 
 module.exports.getUser = (req, res, next) => {
-  User
-    .findById(req.user.id)
-    .exec((err, user) => {
-      if (!user) {
-        return sendJsonResponse(res, 404, {
-          message: 'User not found'
-        });
-      } else if (err) {
-        sendJsonResponse(res, 400, err);
-      } else {
-        sendJsonResponse(res, 200, {
-          id: user.id,
-          email: user.email,
-          data_id: user.data_id
-        });
-      }
-    });
+  sendJsonResponse(res, 200, {
+    id: req.user.id,
+    email: req.user.email,
+    data_id: req.user.data_id
+  });
 }
 
 
 // Some useful functions
+
 // Ends res with given status and json content
 function sendJsonResponse(res, status, content) {
   res.status(status).json(content);
