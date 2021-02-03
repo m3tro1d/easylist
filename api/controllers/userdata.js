@@ -25,10 +25,10 @@ module.exports.addVirtue = (req, res, next) => {
     return res.status(400).end('Please enter all fields');
   } else { // Find user's data and add a virtue
     Userdata
-      .findById(user.data_id)
+      .findById(req.user.data_id)
       .exec((err, userdata) => {
         if (!userdata) { // Check if userdata is found
-          sendJsonResponse(res, 404 {
+          sendJsonResponse(res, 404, {
             message: 'Userdata not found'
           });
         } else if (err) { // Check for error
@@ -37,8 +37,7 @@ module.exports.addVirtue = (req, res, next) => {
           const newVirtue = { name, task };
           userdata.virtues.push(newVirtue);
           userdata
-            .save()
-            .exec((err, changedData) => {
+            .save((err, changedData) => {
               if (err) { // Check for error
                 sendJsonResponse(res, 400, err);
               } else { // Send the created virtue
@@ -65,8 +64,7 @@ module.exports.updateVirtue = (req, res, next) => {
       date: date || Date.now()
     };
     req.userdata
-      .save()
-      .exec((err, savedData) => {
+      .save((err, savedData) => {
         if (err) { // Check for error
           sendJsonResponse(res, 400, err);
         } else { // Send the updated virtue
@@ -79,8 +77,7 @@ module.exports.updateVirtue = (req, res, next) => {
 module.exports.deleteVirtue = (req, res, next) => {
   const updatedVirtues = req.userdata.virtues.splice(req.virtue_index, 1);
   req.userdata
-    .save()
-    .exec((err, savedData) => {
+    .save((err, savedData) => {
       if (err) { // Check for error
         sendJsonResponse(res, 400, err);
       } else { // Send the null response on successful deletion
