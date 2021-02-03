@@ -23,7 +23,7 @@ mongoose.connection.on('disconnected', () => {
 
 
 // Emulate SIGINT on windows
-if (process.platform = 'win32') {
+if (process.platform === 'win32') {
   let rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
