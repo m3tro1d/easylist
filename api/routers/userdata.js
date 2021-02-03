@@ -9,6 +9,8 @@ const router = express.Router();
 
 // Get user's virtues
 router.get('/virtues', auth, getters.getUserById, ctrlUserdata.getVirtues);
+// Get one virtue
+router.get('/virtues/:id', auth, getters.getUserById, getters.getVirtueById, ctrlUserdata.getOneVirtue);
 // Add user's virtue
 router.post('/virtues', auth, getters.getUserById, ctrlUserdata.addVirtue);
 // Update user's virtue

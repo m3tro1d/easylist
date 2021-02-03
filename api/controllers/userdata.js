@@ -51,6 +51,10 @@ module.exports.addVirtue = (req, res, next) => {
   }
 }
 
+module.exports.getOneVirtue = (req, res, next) => {
+  sendJsonResponse(res, 200, req.userdata.virtues[req.virtue_index]);
+}
+
 module.exports.updateVirtue = (req, res, next) => {
   const { name, task, date } = req.body;
   if (!name || !task) {   // Check if all data is present
