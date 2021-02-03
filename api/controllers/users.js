@@ -35,32 +35,32 @@ module.exports.register = (req, res, next) => {
                   process.env.VER_JWT_SECRET,
                   { expiresIn: '1d' },
                   (err, token) => {
-                  if (err) { // Check for error
-                    sendJsonResponse(res, 400, err);
-                  } else {   // Send a confirmation
-                    sendConfirmation(
-                      `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
-                      email,
-                      'Confirm your registration on easylist',
-                      `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
-                      (err, info) => {
-                        if (err) { // Check for error
-                          sendJsonResponse(res, 400, err);
-                        } else {
-                          sendJsonResponse(res, 201, {
-                            message: 'Confirmation email has been sent'
-                          });
-                        }
-                      });
-                  }
-                });
+                    if (err) { // Check for error
+                      sendJsonResponse(res, 400, err);
+                    } else {   // Send a confirmation
+                      sendConfirmation(
+                        `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
+                        email,
+                        'Confirm your registration on easylist',
+                        `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
+                        (err, info) => {
+                          if (err) { // Check for error
+                            sendJsonResponse(res, 400, err);
+                          } else {
+                            sendJsonResponse(res, 201, {
+                              message: 'Confirmation email has been sent'
+                            });
+                          }
+                        });
+                    }
+                  });
               }
             });
           });
         }
       });
   }
-}
+};
 
 module.exports.registerConfirm = (req, res, next) => {
   if (!req.query.token) {  // Check if token is present
@@ -108,7 +108,7 @@ module.exports.registerConfirm = (req, res, next) => {
       });
     }
   }
-}
+};
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -159,7 +159,7 @@ module.exports.login = (req, res, next) => {
         }
       });
   }
-}
+};
 
 module.exports.getUser = (req, res, next) => {
   sendJsonResponse(res, 200, {
@@ -167,7 +167,7 @@ module.exports.getUser = (req, res, next) => {
     email: req.user.email,
     data_id: req.user.data_id
   });
-}
+};
 
 
 // Some useful functions

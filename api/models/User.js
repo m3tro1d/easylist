@@ -11,7 +11,7 @@ const userSchema = mongoose.Schema({
   },
   data_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Userdata",
+    ref: 'Userdata',
     required: true
   }
 });
