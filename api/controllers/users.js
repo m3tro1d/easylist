@@ -25,37 +25,35 @@ module.exports.register = (req, res, next) => {
         } else if (err) { // Check for error
           sendJsonResponse(res, 400, err);
         } else {          // Hash user's password
-          bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(password, salt, (err, hash) => {
-              if (err) {  // Check for error
-                sendJsonResponse(res, 400, err);
-              } else {    // Generate the registration token
-                jwt.sign(
-                  { email: email, password: hash },
-                  process.env.VER_JWT_SECRET,
-                  { expiresIn: '1d' },
-                  (err, token) => {
-                    if (err) { // Check for error
-                      sendJsonResponse(res, 400, err);
-                    } else {   // Send a confirmation
-                      sendConfirmation(
-                        `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
-                        email,
-                        'Confirm your registration on easylist',
-                        `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
-                        (err, info) => {
-                          if (err) { // Check for error
-                            sendJsonResponse(res, 400, err);
-                          } else {
-                            sendJsonResponse(res, 201, {
-                              message: 'Confirmation email has been sent'
-                            });
-                          }
-                        });
-                    }
-                  });
-              }
-            });
+          bcrypt.hash(password, 10, (err, hash) => {
+            if (err) {  // Check for error
+              sendJsonResponse(res, 400, err);
+            } else {    // Generate the registration token
+              jwt.sign(
+                { email: email, password: hash },
+                process.env.VER_JWT_SECRET,
+                { expiresIn: '1d' },
+                (err, token) => {
+                  if (err) { // Check for error
+                    sendJsonResponse(res, 400, err);
+                  } else {   // Send a confirmation
+                    sendConfirmation(
+                      `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
+                      email,
+                      'Confirm your registration on easylist',
+                      `To confirm your registration on easylist please click this link:\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
+                      (err, info) => {
+                        if (err) { // Check for error
+                          sendJsonResponse(res, 400, err);
+                        } else {
+                          sendJsonResponse(res, 201, {
+                            message: 'Confirmation email has been sent'
+                          });
+                        }
+                      });
+                  }
+                });
+            }
           });
         }
       });
