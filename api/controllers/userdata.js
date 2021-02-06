@@ -85,6 +85,22 @@ module.exports.deleteVirtue = (req, res, next) => {
   });
 };
 
+module.exports.addTask = (req, res, next) => {
+  const { text } = req.body;
+  if (!text) { // Check if all data is present
+    sendJsonResponse(res, 400, {
+      message: 'Please provide task text'
+    });
+  } else { // Create the task and send it back
+    req.userdata.virtues[req.virtue_index].tasks.push({ text });
+    req.userdata.save((err, savedData) => {
+      const last_index = savedData.virtues[req.virtue_index].tasks.length - 1;
+      sendJsonResponse(res, 201,
+        savedData.virtues[req.virtue_index].tasks[last_index]);
+    });
+  }
+}
+
 
 // Some useful functions
 
