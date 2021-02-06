@@ -18,4 +18,7 @@ router.put('/virtues/:id', auth, getters.getUserById, getters.getVirtueById, ctr
 // Delete user's virtue
 router.delete('/virtues/:id', auth, getters.getUserById, getters.getVirtueById, ctrlUserdata.deleteVirtue);
 
+// Add a task in a virtue
+router.post('/virtues/:id/task', auth, getters.getUserById, getters.getVirtueById, ctrlUserdata.addTask)
+
 module.exports = router;
