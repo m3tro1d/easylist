@@ -24,7 +24,7 @@ module.exports.getUserById = (req, res, next) => {
     });
 }
 
-// Finds the virtue from req.user and req.params.id and sets the
+// Finds the virtue from req.user and req.params.virtueId and sets the
 // corresponding req.userdata and req.virtue_index
 module.exports.getVirtueById = (req, res, next) => {
   Userdata
@@ -37,7 +37,7 @@ module.exports.getVirtueById = (req, res, next) => {
       } else if (err) { // Check for error
         sendJsonResponse(res, 400, err);
       } else { // Pass to the next controller
-        const index = userdata.virtues.findIndex(el => el.id === req.params.id);
+        const index = userdata.virtues.findIndex(el => el.id === req.params.virtueId);
         if (index === -1) { // Check if the virtue is present
           sendJsonResponse(res, 404, {
             message: 'Virtue not found'
