@@ -105,10 +105,16 @@ module.exports.deleteTask = (req, res, next) => {
   const taskIndex = req.userdata.virtues[req.virtue_index].tasks.find(el => 
     el.id === req.params.taskId
   );
-  req.userdata.virtues[req.virtue_index].tasks.splice(taskIndex, 1);
-  req.userdata.save((err, savedData) => {
-    sendJsonResponse(res, 204, null);
-  });
+  if (taskIndex === -1) { // Check if the task is found
+    sendJsonResponse(res, 404, {
+      message: 'Task not found'
+    }):
+  } else { // Otherwise, yeet it
+    req.userdata.virtues[req.virtue_index].tasks.splice(taskIndex, 1);
+    req.userdata.save((err, savedData) => {
+      sendJsonResponse(res, 204, null);
+    });
+  }
 };
 
 
