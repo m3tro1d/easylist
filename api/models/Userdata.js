@@ -6,10 +6,12 @@ const userdataSchema = mongoose.Schema({
       type: String,
       required: true
     },
-    task: {
-      type: String,
-      'default': ''
-    },
+    tasks: [{
+      text: {
+        type: String,
+        required: true
+      }
+    }],
     date: {
       type: Date,
       'default': Date.now()
