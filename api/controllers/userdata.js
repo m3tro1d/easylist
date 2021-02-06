@@ -99,7 +99,17 @@ module.exports.addTask = (req, res, next) => {
         savedData.virtues[req.virtue_index].tasks[last_index]);
     });
   }
-}
+};
+
+module.exports.deleteTask = (req, res, next) => {
+  const taskIndex = req.userdata.virtues[req.virtue_index].tasks.find(el => 
+    el.id === req.params.taskId
+  );
+  req.userdata.virtues[req.virtue_index].tasks.splice(taskIndex, 1);
+  req.userdata.save((err, savedData) => {
+    sendJsonResponse(res, 204, null);
+  });
+};
 
 
 // Some useful functions
