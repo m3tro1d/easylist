@@ -20,7 +20,7 @@ module.exports.getVirtues = (req, res, next) => {
 
 module.exports.addVirtue = (req, res, next) => {
   const { name, task } = req.body;
-  if (!name || !task) { // Check if all data is present
+  if (!name) { // Check if all data is present
     return res.status(400).end('Please enter all fields');
   } else { // Find user's data and add a virtue
     Userdata
@@ -33,7 +33,7 @@ module.exports.addVirtue = (req, res, next) => {
         } else if (err) { // Check for error
           sendJsonResponse(res, 400, err);
         } else { // Add virtue and save the userdata
-          const newVirtue = { name, task };
+          const newVirtue = { name };
           userdata.virtues.push(newVirtue);
           userdata.save((err, changedData) => {
             if (err) { // Check for error
@@ -55,14 +55,13 @@ module.exports.getOneVirtue = (req, res, next) => {
 
 module.exports.updateVirtue = (req, res, next) => {
   const { name, task, date } = req.body;
-  if (!name && !task && !date) {   // Check if all data is present
+  if (!name && !date) {   // Check if all data is present
     sendJsonResponse(res, 400, {
-      message: 'Please provide name and task'
+      message: 'Please provide name or date'
     });
   } else {       // Update the virtue and save it
     req.userdata.virtues[req.virtue_index] = {
       name: name || req.userdata.virtues[req.virtue_index].name,
-      task: task || req.userdata.virtues[req.virtue_index].task,
       date: date || Date.now()
     };
     req.userdata.save((err, savedData) => {
