@@ -108,7 +108,7 @@ module.exports.deleteTask = (req, res, next) => {
   if (taskIndex === -1) { // Check if the task is found
     sendJsonResponse(res, 404, {
       message: 'Task not found'
-    }):
+    });
   } else { // Otherwise, yeet it
     req.userdata.virtues[req.virtue_index].tasks.splice(taskIndex, 1);
     req.userdata.save((err, savedData) => {

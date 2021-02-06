@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
       });
     }
   }
-}
+};
 
 
 // Some useful functions
