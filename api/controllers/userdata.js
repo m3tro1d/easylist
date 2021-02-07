@@ -12,6 +12,8 @@ module.exports.getVirtues = (req, res, next) => {
         sendJsonResponse(res, 404, {
           message: 'Userdata not found'
         });
+      } else if (err) { // Check for error
+        sendJsonResponse(res, 400, err);
       } else { // Send the virtues
         sendJsonResponse(res, 200, userdata.virtues);
       }
