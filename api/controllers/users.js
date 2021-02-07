@@ -195,3 +195,21 @@ function sendConfirmation(from, to, subject, text, callback) {
   // Send the message
   emailer.sendMail(mailOptions, callback);
 }
+
+// Function promisification to avoid callback hell
+function promisify(f) {
+  return function(...args) {
+    return new Promise((resolve, reject) => {
+      function callback(err, result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      }
+
+      args.push(callback);
+      f.call(this, ...args);
+    });
+  };
+}
