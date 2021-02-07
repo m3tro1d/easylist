@@ -127,32 +127,28 @@ module.exports.login = (req, res, next) => {
           sendJsonResponse(res, 400, err);
         } else {
           bcrypt.compare(password, user.password)
-            .then(isMatch => {
-              if (!isMatch) {   // Check if the password is correct
+            .then(isMatch => { // Verify user's password
+              if (!isMatch) {
                 sendJsonResponse(res, 400, {
                   message: 'Invalid credentials'
                 });
               } else {
-                // Create a token
-                jwt.sign(
-                  { id: user.id },
-                  process.env.JWT_SECRET,
-                  (err, token) => {
-                    if (err) {   // Check for error
-                      sendJsonResponse(res, 400, err);
-                    } else {     // Respond with the token and user info
-                      sendJsonResponse(res, 200, {
-                        token,
-                        user: {
-                          id: user.id,
-                          email: user.email,
-                          data_id: user.data_id
-                        }
-                      });
-                    }
-                  }
-                );
+                const jwtSignPromise = promisify(jwt.sign);
+                return jwtSignPromise({ id: user.id }, process.env.JWT_SECRET);
               }
+            })
+            .then(token => { // Respond with a token
+              sendJsonResponse(res, 200, {
+                token,
+                user: {
+                  id: user.id,
+                  email: user.email,
+                  data_id: user.data_id
+                }
+              });
+            })
+            .catch(err => { // Catch all errors
+              sendJsonResponse(res, 400, err);
             });
         }
       });
