@@ -56,45 +56,37 @@ module.exports.registerConfirm = (req, res, next) => {
       message: 'No token provided'
     });
   } else {
-    try {
-      // Verify the token
-      const newUserPlain = jwt.verify(req.query.token, process.env.VER_JWT_SECRET);
-      User
-        .findOne({ email: newUserPlain.email })
-        .exec((err, user) => {
-          if (user) {       // Check if the user has been registered already
-            sendJsonResponse(res, 400, {
-              message: 'User already registered'
-            });
-          } else if (err) { // Check for error
-            sendJsonResponse(res, 400, err);
-          } else {          // Create the user and user's data
-            Userdata
-              .create({}, (err, userdata) => {
-                if (err) { // Check for error
-                  sendJsonResponse(res, 400, err);
-                } else {   // Create the user
-                  User
-                    .create({
-                      email: newUserPlain.email,
-                      password: newUserPlain.password,
-                      data_id: userdata.id
-                    }, (err, user) => {
-                      if (err) { // Check for error
-                        sendJsonResponse(res, 400, err);
-                      } else {   // Redirect to the index page
-                        res.redirect(302, '/');
-                      }
-                    });
-                }
+    // Verify the token
+    const jwtVerifyPromise = promisify(jwt.verify);
+    jwtVerifyPromise(req.query.token, process.env.VER_JWT_SECRET)
+      .then(decodedUser => {
+        User.findOne({ email: decodedUser.email })
+          .exec((err, user) => {
+            if (user) {
+              sendJsonResponse(res, 400, {
+                message: 'User already registered'
               });
-          }
-        });
-    } catch(e) { // Catch the invalid token
-      sendJsonResponse(res, 400, {
-        message: 'Token is invalid'
+            } else if (err) {
+              sendJsonResponse(res, 400, err);
+            } else {
+              Userdata.create({})
+                .then(userdata => User.create({
+                  email: decodedUser.email,
+                  password: decodedUser.password,
+                  data_id: userdata.id })
+                )
+                .then(user => {
+                  res.redirect(302, '/');
+                })
+                .catch(err => {
+                  sendJsonResponse(res, 400, err);
+                });
+            }
+          });
+      })
+      .catch(err => {
+        sendJsonResponse(res, 400, err);
       });
-    }
   }
 };
 
