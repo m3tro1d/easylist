@@ -30,22 +30,17 @@ module.exports.register = (req, res, next) => {
               const jwtSignPromise = promisify(jwt.sign);
               return jwtSignPromise({ email, password: hash }, process.env.VER_JWT_SECRET);
             })
-            .then(token => {
-              sendConfirmation(
-                `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
-                email,
-                'Confirm your registration on easylist',
-                'To confirm your registration on easylist please click this link:'
-                + `\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`,
-                (err, info) => {
-                  if (err) { // Check for error
-                    sendJsonResponse(res, 400, err);
-                  } else {
-                    sendJsonResponse(res, 201, {
-                      message: 'Confirmation email has been sent'
-                    });
-                  }
-                });
+            .then(token => sendConfirmation(
+              `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
+              email,
+              'Confirm your registration on easylist',
+              'To confirm your registration on easylist please click this link:'
+              + `\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`)
+            )
+            .then(info => {
+              sendJsonResponse(res, 201, {
+                message: 'Confirmation email has been sent'
+              });
             })
             .catch(err => { // Catch all errors
               sendJsonResponse(res, 400, err);
@@ -167,7 +162,7 @@ function sendJsonResponse(res, status, content) {
 }
 
 // Sends a registration confirmation email
-function sendConfirmation(from, to, subject, text, callback) {
+function sendConfirmation(from, to, subject, text) {
   // Set up the mail client
   const emailer = nodemailer.createTransport({
     pool: true,
@@ -184,7 +179,15 @@ function sendConfirmation(from, to, subject, text, callback) {
   const mailOptions = { from, to, subject, text };
 
   // Send the message
-  emailer.sendMail(mailOptions, callback);
+  return new Promise((resolve, reject) => {
+    emailer.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(info);
+      }
+    });
+  });
 }
 
 // Function promisification to avoid callback hell
