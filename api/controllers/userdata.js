@@ -38,16 +38,23 @@ module.exports.addVirtue = (req, res, next) => {
           sendJsonResponse(res, 400, err);
         } else { // Add virtue and save the userdata
           const newVirtue = { name };
-          userdata.virtues.push(newVirtue);
-          userdata.save()
-            .then(changedData => { // Respond with the created virtue
-              sendJsonResponse(res, 201, 
-                changedData.virtues[changedData.virtues.length - 1]
-              );
-            })
-            .catch(err => { // Check for error
-              sendJsonResponse(res, 400, err);
+          const exists = userdata.virtues.findIndex(el => el.name === name);
+          if (index === -1) { // Check if the such virtue already exists
+            sendJsonResponse(res, 400, {
+              message: 'Virtue already exists'
             });
+          } else {
+            userdata.virtues.push(newVirtue);
+            userdata.save()
+              .then(changedData => { // Respond with the created virtue
+                sendJsonResponse(res, 201, 
+                  changedData.virtues[changedData.virtues.length - 1]
+                );
+              })
+              .catch(err => { // Check for error
+                sendJsonResponse(res, 400, err);
+              });
+          }
         }
       });
   }
