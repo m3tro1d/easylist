@@ -89,6 +89,27 @@ module.exports.deleteVirtue = (req, res, next) => {
     });
 };
 
+module.exports.getTasks = (req, res, next) => {
+  Userdata
+    .findById(req.user.data_id)
+    .exec((err, userdata) => {
+      if (!userdata) { // Check if userdata is found
+        sendJsonResponse(res, 404, {
+          message: 'Userdata not found'
+        });
+      } else if (err) { // Check for error
+        sendJsonResponse(res, 400, err);
+      } else { // Merge the tasks and send them
+        sendJsonResponse(res, 200,
+          userdata.virtues.reduce((acc, v) => {
+            let tasks = v.tasks.map(t => ({ text: t.text, virtue: v.name }));
+            return acc.concat(tasks);
+          }, [])
+        );
+      }
+    });
+};
+
 module.exports.addTask = (req, res, next) => {
   const { text } = req.body;
   if (!text) { // Check if all data is present
