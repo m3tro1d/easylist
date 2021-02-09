@@ -15,7 +15,9 @@ module.exports.getVirtues = (req, res, next) => {
       } else if (err) { // Check for error
         sendJsonResponse(res, 400, err);
       } else { // Send the virtues
-        sendJsonResponse(res, 200, userdata.virtues);
+        sendJsonResponse(res, 200, userdata.virtues.map(v => {
+          return v.name;
+        }));
       }
     });
 };
