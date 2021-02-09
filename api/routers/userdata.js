@@ -18,6 +18,9 @@ router.put('/virtues/:virtueName', auth, getters.getUserById, getters.getVirtueB
 // Delete user's virtue
 router.delete('/virtues/:virtueName', auth, getters.getUserById, getters.getVirtueByName, ctrlUserdata.deleteVirtue);
 
+// Get all tasks merged into one array
+router.get('/tasks', auth, getters.getUserById, ctrlUserdata.getTasks);
+
 // Add a task in a virtue
 router.post('/virtues/:virtueName/tasks/', auth, getters.getUserById, getters.getVirtueByName, ctrlUserdata.addTask);
 // Delete a task
