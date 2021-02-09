@@ -39,15 +39,15 @@ module.exports.addVirtue = (req, res, next) => {
         } else { // Add virtue and save the userdata
           const newVirtue = { name };
           userdata.virtues.push(newVirtue);
-          userdata.save((err, changedData) => {
-            if (err) { // Check for error
-              sendJsonResponse(res, 400, err);
-            } else { // Send the created virtue
-              sendJsonResponse(res, 201,
+          userdata.save()
+            .then(changedData => { // Respond with the created virtue
+              sendJsonResponse(res, 201, 
                 changedData.virtues[changedData.virtues.length - 1]
               );
-            }
-          });
+            })
+            .catch(err => { // Check for error
+              sendJsonResponse(res, 400, err);
+            });
         }
       });
   }
