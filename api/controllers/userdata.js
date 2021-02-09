@@ -23,7 +23,7 @@ module.exports.getVirtues = (req, res, next) => {
 };
 
 module.exports.addVirtue = (req, res, next) => {
-  const { name, task } = req.body;
+  const { name } = req.body;
   if (!name) { // Check if all data is present
     return res.status(400).end('Please enter all fields');
   } else { // Find user's data and add a virtue
@@ -68,25 +68,25 @@ module.exports.updateVirtue = (req, res, next) => {
       name: name || req.userdata.virtues[req.virtue_index].name,
       date: date || Date.now()
     };
-    req.userdata.save((err, savedData) => {
-      if (err) { // Check for error
+    req.userdata.save()
+      .then(savedData => { // Return the modified data
+        sendJsonResponse(res, 400, savedData.virtues[req.virtue_index]);
+      })
+      .catch(err => { // Check for error
         sendJsonResponse(res, 400, err);
-      } else { // Send the updated virtue
-        sendJsonResponse(res, 200, savedData.virtues[req.virtue_index]);
-      }
-    });
+      });
   }
 };
 
 module.exports.deleteVirtue = (req, res, next) => {
   req.userdata.virtues.splice(req.virtue_index, 1);
-  req.userdata.save((err, savedData) => {
-    if (err) { // Check for error
-      sendJsonResponse(res, 400, err);
-    } else { // Send the null response on successful deletion
+  req.userdata.save()
+    .then(savedData => { // Return null if everything is alrighty
       sendJsonResponse(res, 204, null);
-    }
-  });
+    })
+    .catch(err => { // Check for error
+      sendJsonResponse(res, 400, err);
+    });
 };
 
 module.exports.addTask = (req, res, next) => {
@@ -97,11 +97,15 @@ module.exports.addTask = (req, res, next) => {
     });
   } else { // Create the task and send it back
     req.userdata.virtues[req.virtue_index].tasks.push({ text });
-    req.userdata.save((err, savedData) => {
-      const lastIndex = savedData.virtues[req.virtue_index].tasks.length - 1;
-      sendJsonResponse(res, 201,
-        savedData.virtues[req.virtue_index].tasks[lastIndex]);
-    });
+    req.userdata.save()
+      .then(savedData => {
+        const lastIndex = savedData.virtues[req.virtue_index].tasks.length - 1;
+        sendJsonResponse(res, 201,
+          savedData.virtues[req.virtue_index].tasks[lastIndex]);
+      })
+      .catch(err => { // Check for error
+        sendJsonResponse(res, 400, err);
+      });
   }
 };
 
@@ -115,9 +119,13 @@ module.exports.deleteTask = (req, res, next) => {
     });
   } else { // Otherwise, yeet it
     req.userdata.virtues[req.virtue_index].tasks.splice(taskIndex, 1);
-    req.userdata.save((err, savedData) => {
-      sendJsonResponse(res, 204, null);
-    });
+    req.userdata.save()
+      .then(savedData => { // Return null if everything is alrighty
+        sendJsonResponse(res, 204, null);
+      })
+      .catch(err => { // Check for error
+        sendJsonResponse(res, 400, err);
+      });
   }
 };
 
