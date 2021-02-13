@@ -4,7 +4,7 @@ const ctrlUserdata = require('../controllers/userdata.js');
 const auth = require('../../middleware/auth');
 const getters = require('../../middleware/getters');
 
-// Router for the blog API routes
+
 const router = express.Router();
 
 // Get user's virtues

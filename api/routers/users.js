@@ -4,7 +4,7 @@ const ctrlUsers = require('../controllers/users');
 const auth = require('../../middleware/auth');
 const getters = require('../../middleware/getters');
 
-// Router for the blog API routes
+
 const router = express.Router();
 
 // Request registration
