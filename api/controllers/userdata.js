@@ -16,7 +16,10 @@ module.exports.getVirtues = (req, res, next) => {
         sendJsonResponse(res, 400, err);
       } else { // Send the virtues
         sendJsonResponse(res, 200, userdata.virtues.map(v => {
-          return v.name;
+          return {
+            id: v.id,
+            name: v.name
+          };
         }));
       }
     });
