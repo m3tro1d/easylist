@@ -138,7 +138,7 @@ module.exports.addTask = (req, res, next) => {
         const lastIndex = currentVirtue.tasks.length - 1;
         sendJsonResponse(res, 201, {
           id: currentVirtue.tasks[lastIndex].id,
-          data: currentVirtue.tasks[lastIndex].date,
+          date: currentVirtue.tasks[lastIndex].date,
           text: currentVirtue.tasks[lastIndex].text,
           virtue: currentVirtue.name
         });
