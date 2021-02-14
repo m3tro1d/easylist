@@ -111,7 +111,12 @@ module.exports.getTasks = (req, res, next) => {
       } else { // Merge the tasks and send them
         sendJsonResponse(res, 200,
           userdata.virtues.reduce((acc, v) => {
-            let tasks = v.tasks.map(t => ({ text: t.text, virtue: v.name, date: t.date }));
+            let tasks = v.tasks.map(t => ({
+              id: t.id,
+              text: t.text,
+              virtue: v.name,
+              date: t.date
+            }));
             return acc.concat(tasks);
           }, [])
         );
