@@ -42,7 +42,7 @@ module.exports.addVirtue = (req, res, next) => {
         } else { // Add virtue and save the userdata
           const newVirtue = { name };
           const exists = userdata.virtues.findIndex(el => el.name === name);
-          if (index === -1) { // Check if the such virtue already exists
+          if (exists !== -1) { // Check if the such virtue already exists
             sendJsonResponse(res, 400, {
               message: 'Virtue already exists'
             });
