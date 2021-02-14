@@ -69,14 +69,13 @@ module.exports.getOneVirtue = (req, res, next) => {
 
 module.exports.updateVirtue = (req, res, next) => {
   const { name, task, date } = req.body;
-  if (!name && !date) {   // Check if all data is present
+  if (!name) {   // Check if all data is present
     sendJsonResponse(res, 400, {
-      message: 'Please provide name or date'
+      message: 'Please provide name'
     });
   } else {       // Update the virtue and save it
     req.userdata.virtues[req.virtue_index] = {
       name: name || req.userdata.virtues[req.virtue_index].name,
-      date: date || Date.now()
     };
     req.userdata.save()
       .then(savedData => { // Return the modified data
@@ -112,7 +111,7 @@ module.exports.getTasks = (req, res, next) => {
       } else { // Merge the tasks and send them
         sendJsonResponse(res, 200,
           userdata.virtues.reduce((acc, v) => {
-            let tasks = v.tasks.map(t => ({ text: t.text, virtue: v.name }));
+            let tasks = v.tasks.map(t => ({ text: t.text, virtue: v.name, date: t.date }));
             return acc.concat(tasks);
           }, [])
         );
