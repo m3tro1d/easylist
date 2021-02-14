@@ -10,12 +10,12 @@ const userdataSchema = mongoose.Schema({
       text: {
         type: String,
         required: true
+      },
+      date: {
+        type: Date,
+        'default': Date.now()
       }
-    }],
-    date: {
-      type: Date,
-      'default': Date.now()
-    }
+    }]
   }]
 });
 
