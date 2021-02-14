@@ -129,9 +129,14 @@ module.exports.addTask = (req, res, next) => {
     req.userdata.virtues[req.virtue_index].tasks.push({ text });
     req.userdata.save()
       .then(savedData => {
-        const lastIndex = savedData.virtues[req.virtue_index].tasks.length - 1;
-        sendJsonResponse(res, 201,
-          savedData.virtues[req.virtue_index].tasks[lastIndex]);
+        const currentVirtue = savedData.virtues[req.virtue_index]
+        const lastIndex = currentVirtue.tasks.length - 1;
+        sendJsonResponse(res, 201, {
+          id: currentVirtue.tasks[lastIndex].id,
+          data: currentVirtue.tasks[lastIndex].date,
+          text: currentVirtue.tasks[lastIndex].text,
+          virtue: currentVirtue.name
+        });
       })
       .catch(err => { // Check for error
         sendJsonResponse(res, 400, err);
