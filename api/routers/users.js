@@ -13,6 +13,8 @@ router.post('/register', ctrlUsers.register);
 router.get('/register/confirm', ctrlUsers.registerConfirm);
 // Authorize a user
 router.post('/login', ctrlUsers.login);
+// Authorize a user via google oauth
+router.post('/googlelogin', ctrlUsers.googleLogin);
 // Get current user details
 router.get('/user', auth, getters.getUserById, ctrlUsers.getUser);
 
