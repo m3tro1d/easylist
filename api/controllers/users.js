@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const { OAuth2Client } = require('google-auth-library');
 
 
 const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
+
+const oAuthClient = new OAuth2Client(process.env.CLIENT_ID);
 
 module.exports.register = (req, res, next) => {
   const { email, password } = req.body;
@@ -135,6 +138,16 @@ module.exports.login = (req, res, next) => {
         }
       });
   }
+};
+
+module.exports.googleLogin = (req, res, next) => {
+  const { token } = req.body;
+  oAuthClient
+    .verifyIdToken({ idToken: token, audience: process.env.CLIENT_ID })
+    .then(authRes => {
+      // const { email_verified, email } = authRes.body;
+      console.log(authRes.body);
+    });
 };
 
 module.exports.getUser = (req, res, next) => {
