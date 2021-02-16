@@ -8,6 +8,7 @@ const { OAuth2Client } = require('google-auth-library');
 const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
 
+const jwtSignPromise = promisify(jwt.sign);
 const oAuthClient = new OAuth2Client(process.env.CLIENT_ID);
 
 module.exports.register = (req, res, next) => {
@@ -30,7 +31,6 @@ module.exports.register = (req, res, next) => {
         } else {          // Hash user's password
           bcrypt.hash(password, 10)
             .then(hash => {
-              const jwtSignPromise = promisify(jwt.sign);
               return jwtSignPromise({ email, password: hash }, process.env.VER_JWT_SECRET);
             })
             .then(token => sendConfirmation(
@@ -118,7 +118,6 @@ module.exports.login = (req, res, next) => {
                   message: 'Invalid credentials'
                 });
               } else {
-                const jwtSignPromise = promisify(jwt.sign);
                 return jwtSignPromise({ id: user.id }, process.env.JWT_SECRET);
               }
             })
@@ -152,7 +151,6 @@ module.exports.googleLogin = (req, res, next) => {
           if (err) { // Check for errors
             sendJsonResponse(res, 400, err);
           } else if (user) { // Userd is found, log in
-            const jwtSignPromise = promisify(jwt.sign);
             jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
               .then(token => {
                 sendJsonResponse(res, 200, {
