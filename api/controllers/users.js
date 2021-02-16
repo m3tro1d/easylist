@@ -168,7 +168,7 @@ module.exports.googleLogin = (req, res, next) => {
             Userdata.create({})
               .then(userdata => User.create({
                 email: user.email,
-                password: user.password,
+                password: generatePassword(),
                 data_id: userdata.id })
               )
               .then(user => {
@@ -253,4 +253,10 @@ function promisify(f) {
       f.call(this, ...args);
     });
   };
+}
+
+// Returns a randomly generated password
+function generatePassword() {
+  // Last 8 characters of the random number converted to base-36
+  return Math.random().toString(36).slice(-8);
 }
