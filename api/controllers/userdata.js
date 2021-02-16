@@ -125,13 +125,18 @@ module.exports.getTasks = (req, res, next) => {
 };
 
 module.exports.addTask = (req, res, next) => {
-  const { text } = req.body;
+  const { text, date } = req.body;
   if (!text) { // Check if all data is present
     sendJsonResponse(res, 400, {
       message: 'Please provide task text'
     });
   } else { // Create the task and send it back
-    req.userdata.virtues[req.virtue_index].tasks.push({ text });
+    let newTask = { text };
+    // Check for optional date
+    if (date) {
+      newTask.date = date;
+    }
+    req.userdata.virtues[req.virtue_index].tasks.push(newTask);
     req.userdata.save()
       .then(savedData => {
         const currentVirtue = savedData.virtues[req.virtue_index]
