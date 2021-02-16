@@ -144,9 +144,51 @@ module.exports.googleLogin = (req, res, next) => {
   const { token } = req.body;
   oAuthClient
     .verifyIdToken({ idToken: token, audience: process.env.CLIENT_ID })
-    .then(authRes => {
-      // const { email_verified, email } = authRes.body;
-      console.log(authRes.body);
+    .then(authRes => { // Decode the token and verify the user
+      const { email_verified, email } = authRes.body;
+      User
+        .findOne({ email })
+        .exec((err, user) => {
+          if (err) { // Check for errors
+            sendJsonResponse(res, 400, err);
+          } else if (user) { // Userd is found, log in
+            const jwtSignPromise = promisify(jwt.sign);
+            jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
+              .then(token => {
+                sendJsonResponse(res, 200, {
+                  token,
+                  user: {
+                    id: user.id,
+                    email: user.email,
+                    data_id: user.data_id
+                  }
+                });
+              });
+          } else { // User isn't found, register and log in
+            Userdata.create({})
+              .then(userdata => User.create({
+                email: user.email,
+                password: user.password,
+                data_id: userdata.id })
+              )
+              .then(user => {
+                sendJsonResponse(res, 200, {
+                  token,
+                  user: {
+                    id: user.id,
+                    email: user.email,
+                    data_id: user.data_id
+                  }
+                });
+              })
+              .catch(err => {
+                sendJsonResponse(res, 400, err);
+              });
+          }
+        });
+    })
+    .catch(err => { // Catch all errors
+      sendJsonResponse(res, 400, err);
     });
 };
 
