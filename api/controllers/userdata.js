@@ -68,7 +68,7 @@ module.exports.getOneVirtue = (req, res, next) => {
 };
 
 module.exports.updateVirtue = (req, res, next) => {
-  const { name, task, date } = req.body;
+  const { name } = req.body;
   if (!name) {   // Check if all data is present
     sendJsonResponse(res, 400, {
       message: 'Please provide name'
