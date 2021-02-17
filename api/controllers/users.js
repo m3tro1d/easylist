@@ -140,17 +140,16 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.googleLogin = (req, res, next) => {
-  const { token } = req.body;
   oAuthClient
-    .verifyIdToken({ idToken: token, audience: process.env.CLIENT_ID })
+    .verifyIdToken({ idToken: req.body.tokenId, audience: process.env.CLIENT_ID })
     .then(authRes => { // Decode the token and verify the user
-      const { email_verified, email } = authRes.body;
+      const { email_verified, email } = authRes.payload;
       User
         .findOne({ email })
         .exec((err, user) => {
           if (err) { // Check for errors
             sendJsonResponse(res, 400, err);
-          } else if (user) { // Userd is found, log in
+          } else if (user) { // User is found, log in
             jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
               .then(token => {
                 sendJsonResponse(res, 200, {
@@ -165,7 +164,7 @@ module.exports.googleLogin = (req, res, next) => {
           } else { // User isn't found, register and log in
             Userdata.create({})
               .then(userdata => User.create({
-                email: user.email,
+                email: req.body.email,
                 password: generatePassword(),
                 data_id: userdata.id })
               )
