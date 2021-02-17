@@ -164,19 +164,22 @@ module.exports.googleLogin = (req, res, next) => {
           } else { // User isn't found, register and log in
             Userdata.create({})
               .then(userdata => User.create({
-                email: req.body.email,
+                email,
                 password: generatePassword(),
                 data_id: userdata.id })
               )
               .then(user => {
-                sendJsonResponse(res, 200, {
-                  token,
-                  user: {
-                    id: user.id,
-                    email: user.email,
-                    data_id: user.data_id
-                  }
-                });
+                jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
+                  .then(token => {
+                    sendJsonResponse(res, 200, {
+                      token,
+                      user: {
+                        id: user.id,
+                        email: user.email,
+                        data_id: user.data_id
+                      }
+                    });
+                  });
               })
               .catch(err => {
                 sendJsonResponse(res, 400, err);
