@@ -2,10 +2,14 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const { OAuth2Client } = require('google-auth-library');
 
 
 const Userdata = mongoose.model('Userdata');
 const User = mongoose.model('User');
+
+const jwtSignPromise = promisify(jwt.sign);
+const oAuthClient = new OAuth2Client(process.env.CLIENT_ID);
 
 module.exports.register = (req, res, next) => {
   const { email, password } = req.body;
@@ -27,7 +31,6 @@ module.exports.register = (req, res, next) => {
         } else {          // Hash user's password
           bcrypt.hash(password, 10)
             .then(hash => {
-              const jwtSignPromise = promisify(jwt.sign);
               return jwtSignPromise({ email, password: hash }, process.env.VER_JWT_SECRET);
             })
             .then(token => sendConfirmation(
@@ -115,7 +118,6 @@ module.exports.login = (req, res, next) => {
                   message: 'Invalid credentials'
                 });
               } else {
-                const jwtSignPromise = promisify(jwt.sign);
                 return jwtSignPromise({ id: user.id }, process.env.JWT_SECRET);
               }
             })
@@ -135,6 +137,59 @@ module.exports.login = (req, res, next) => {
         }
       });
   }
+};
+
+module.exports.googleLogin = (req, res, next) => {
+  oAuthClient
+    .verifyIdToken({ idToken: req.body.tokenId, audience: process.env.CLIENT_ID })
+    .then(authRes => { // Decode the token and verify the user
+      const { email_verified, email } = authRes.payload;
+      User
+        .findOne({ email })
+        .exec((err, user) => {
+          if (err) { // Check for errors
+            sendJsonResponse(res, 400, err);
+          } else if (user) { // User is found, log in
+            jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
+              .then(token => {
+                sendJsonResponse(res, 200, {
+                  token,
+                  user: {
+                    id: user.id,
+                    email: user.email,
+                    data_id: user.data_id
+                  }
+                });
+              });
+          } else { // User isn't found, register and log in
+            Userdata.create({})
+              .then(userdata => User.create({
+                email,
+                password: generatePassword(),
+                data_id: userdata.id })
+              )
+              .then(user => {
+                jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
+                  .then(token => {
+                    sendJsonResponse(res, 200, {
+                      token,
+                      user: {
+                        id: user.id,
+                        email: user.email,
+                        data_id: user.data_id
+                      }
+                    });
+                  });
+              })
+              .catch(err => {
+                sendJsonResponse(res, 400, err);
+              });
+          }
+        });
+    })
+    .catch(err => { // Catch all errors
+      sendJsonResponse(res, 400, err);
+    });
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -198,4 +253,10 @@ function promisify(f) {
       f.call(this, ...args);
     });
   };
+}
+
+// Returns a randomly generated password
+function generatePassword() {
+  // Last 8 characters of the random number converted to base-36
+  return Math.random().toString(36).slice(-8);
 }
