@@ -134,7 +134,7 @@ module.exports.addTask = (req, res, next) => {
     let newTask = { text };
     // Check for optional date
     if (date) {
-      newTask.date = date;
+      newTask.date = Date(date);
     }
     req.userdata.virtues[req.virtue_index].tasks.push(newTask);
     req.userdata.save()
