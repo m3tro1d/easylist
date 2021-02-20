@@ -196,10 +196,9 @@ module.exports.sendSurvey = (req, res, next) => {
           return acc.concat(tasks);
         }, [])
         // Filter by date
-        let tasksFiltered = tasksArray.filter(isToday);
-        console.log(tasksFiltered);
+        let tasksFiltered = tasksArray.filter(t => isToday(t.date));
         // Send them
-        sendJsonResponse(res, 200, null); // Placeholder
+        sendJsonResponse(res, 200, tasksFiltered);
       }
     });
 };
@@ -215,9 +214,9 @@ function sendJsonResponse(res, status, content) {
 // Returns true if the date is today
 function isToday(date) {
   const today = new Date();
-  return date.getDate() == today.getDate() &&
-    date.getMonth() == today.getMonth() &&
-    date.getFullYear() == today.getFullYear();
+  return date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
 }
 
 
