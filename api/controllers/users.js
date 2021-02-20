@@ -114,9 +114,7 @@ module.exports.login = (req, res, next) => {
           bcrypt.compare(password, user.password)
             .then(isMatch => { // Verify user's password
               if (!isMatch) {
-                sendJsonResponse(res, 400, {
-                  message: 'Invalid credentials'
-                });
+                throw { message: 'Invalid credentials' };
               } else {
                 return jwtSignPromise({ id: user.id }, process.env.JWT_SECRET);
               }
