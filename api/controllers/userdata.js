@@ -174,10 +174,78 @@ module.exports.deleteTask = (req, res, next) => {
   }
 };
 
+module.exports.sendSurvey = (req, res, next) => {
+  Userdata
+    .findById(req.user.data_id)
+    .exec((err, userdata) => {
+      if (!userdata) { // Check if userdata is found
+        sendJsonResponse(res, 404, {
+          message: 'Userdata not found'
+        });
+      } else if (err) { // Check for error
+        sendJsonResponse(res, 400, err);
+      } else {
+        // Merge the tasks altogether
+        let tasksArray = userdata.virtues.reduce((acc, v) => {
+          let tasks = v.tasks.map(t => ({
+            id: t.id,
+            text: t.text,
+            virtue: v.name,
+            date: t.date
+          }));
+          return acc.concat(tasks);
+        }, [])
+        // Filter by date
+        let tasksFiltered = tasksArray.filter(isToday);
+        console.log(tasksFiltered);
+        // Send them
+        sendJsonResponse(res, 200, null); // Placeholder
+      }
+    });
+};
+
 
 // Some useful functions
 
 // Ends res with given status and json content
 function sendJsonResponse(res, status, content) {
   res.status(status).json(content);
+}
+
+// Returns true if the date is today
+function isToday(date) {
+  const today = new Date();
+  return date.getDate() == today.getDate() &&
+    date.getMonth() == today.getMonth() &&
+    date.getFullYear() == today.getFullYear();
+}
+
+
+// Sends an email survey
+function sendSurvey(from, to, subject, text) {
+  // Set up the mail client
+  const emailer = nodemailer.createTransport({
+    pool: true,
+    host: 'smtp.mail.ru',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.VER_ADDRESS,
+      pass: process.env.VER_PASSWORD
+    }
+  });
+
+  // Prepare the message
+  const mailOptions = { from, to, subject, text };
+
+  // Send the message
+  return new Promise((resolve, reject) => {
+    emailer.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(info);
+      }
+    });
+  });
 }
