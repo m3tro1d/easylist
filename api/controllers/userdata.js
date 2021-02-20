@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
 
 
 const Userdata = mongoose.model('Userdata');
@@ -198,7 +199,18 @@ module.exports.sendSurvey = (req, res, next) => {
         // Filter by date
         let tasksFiltered = tasksArray.filter(t => isToday(t.date));
         // Send them
-        sendJsonResponse(res, 200, tasksFiltered);
+        sendSurvey(
+          `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
+          req.user.email,
+          'Your tasks for today',
+          formSurvey(tasksFiltered)
+        ).then(info => {
+          sendJsonResponse(res, 200, {
+            message: 'Sent successfully'
+          });
+        }).catch(err => {
+            sendJsonResponse(res, 400, err);
+          });
       }
     });
 };
@@ -219,6 +231,19 @@ function isToday(date) {
     date.getFullYear() === today.getFullYear();
 }
 
+// Formats the tasks in a pretty way
+function formSurvey(tasks) {
+  let result = 'Hi! Here\'s your tasks for today:\n';
+  for (t of tasks) {
+    result += `${t.virtue}: ${t.text}\n`;
+  }
+  if (tasks) {
+    result += '\nLooking good!\n';
+  } else {
+    result += '\nNot much, huh?\n'
+  }
+  return result;
+}
 
 // Sends an email survey
 function sendSurvey(from, to, subject, text) {
