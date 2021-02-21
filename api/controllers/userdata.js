@@ -11,7 +11,7 @@ module.exports.getVirtues = (req, res, next) => {
     .exec((err, userdata) => {
       if (!userdata) { // Check if userdata is found
         sendJsonResponse(res, 404, {
-          message: 'Userdata not found'
+          message: 'Данные пользователя не найдены'
         });
       } else if (err) { // Check for error
         sendJsonResponse(res, 400, err);
@@ -29,14 +29,16 @@ module.exports.getVirtues = (req, res, next) => {
 module.exports.addVirtue = (req, res, next) => {
   const { name } = req.body;
   if (!name) { // Check if all data is present
-    return res.status(400).end('Please enter all fields');
+    return sendJsonResponse(res, 400, {
+      message: 'Введите название категории'
+    });
   } else { // Find user's data and add a virtue
     Userdata
       .findById(req.user.data_id)
       .exec((err, userdata) => {
         if (!userdata) { // Check if userdata is found
           sendJsonResponse(res, 404, {
-            message: 'Userdata not found'
+            message: 'Данные пользователя не найдены'
           });
         } else if (err) { // Check for error
           sendJsonResponse(res, 400, err);
@@ -45,7 +47,7 @@ module.exports.addVirtue = (req, res, next) => {
           const exists = userdata.virtues.findIndex(el => el.name === name);
           if (exists !== -1) { // Check if the such virtue already exists
             sendJsonResponse(res, 400, {
-              message: 'Virtue already exists'
+              message: 'Категория уже существует'
             });
           } else {
             userdata.virtues.push(newVirtue);
@@ -72,7 +74,7 @@ module.exports.updateVirtue = (req, res, next) => {
   const { name } = req.body;
   if (!name) {   // Check if all data is present
     sendJsonResponse(res, 400, {
-      message: 'Please provide name'
+      message: 'Введите название категории'
     });
   } else {       // Update the virtue and save it
     req.userdata.virtues[req.virtue_index] = {
@@ -105,7 +107,7 @@ module.exports.getTasks = (req, res, next) => {
     .exec((err, userdata) => {
       if (!userdata) { // Check if userdata is found
         sendJsonResponse(res, 404, {
-          message: 'Userdata not found'
+          message: 'Данные пользователя не найдены'
         });
       } else if (err) { // Check for error
         sendJsonResponse(res, 400, err);
@@ -129,7 +131,7 @@ module.exports.addTask = (req, res, next) => {
   const { text, date } = req.body;
   if (!text) { // Check if all data is present
     sendJsonResponse(res, 400, {
-      message: 'Please provide task text'
+      message: 'Введите текст задачи'
     });
   } else { // Create the task and send it back
     let newTask = { text };
@@ -161,7 +163,7 @@ module.exports.deleteTask = (req, res, next) => {
   );
   if (taskIndex === -1) { // Check if the task is found
     sendJsonResponse(res, 404, {
-      message: 'Task not found'
+      message: 'Задача не найдена'
     });
   } else { // Otherwise, yeet it
     req.userdata.virtues[req.virtue_index].tasks.splice(taskIndex, 1);
@@ -181,7 +183,7 @@ module.exports.sendSurvey = (req, res, next) => {
     .exec((err, userdata) => {
       if (!userdata) { // Check if userdata is found
         sendJsonResponse(res, 404, {
-          message: 'Userdata not found'
+          message: 'Данные пользователя не найдены'
         });
       } else if (err) { // Check for error
         sendJsonResponse(res, 400, err);
@@ -202,11 +204,11 @@ module.exports.sendSurvey = (req, res, next) => {
         sendSurvey(
           `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
           req.user.email,
-          'Your tasks for today',
+          'Ваши задачи на сегодня',
           formSurvey(tasksFiltered)
         ).then(info => {
           sendJsonResponse(res, 200, {
-            message: 'Sent successfully'
+            message: 'Отправлено успешно'
           });
         }).catch(err => {
             sendJsonResponse(res, 400, err);
@@ -233,14 +235,14 @@ function isToday(date) {
 
 // Formats the tasks in a pretty way
 function formSurvey(tasks) {
-  let result = 'Hi! Here\'s your tasks for today:\n';
+  let result = 'Привет! Ваши задания на сегодня:\n';
   for (t of tasks) {
     result += `${t.virtue}: ${t.text}\n`;
   }
   if (tasks) {
-    result += '\nLooking good!\n';
+    result += '\nТак держать!\n';
   } else {
-    result += '\nNot much, huh?\n'
+    result += '\nНе очень много, не так ли?\n'
   }
   return result;
 }

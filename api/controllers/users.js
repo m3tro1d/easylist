@@ -16,7 +16,7 @@ module.exports.register = (req, res, next) => {
 
   if (!email || !password) { // Check if all data is present
     sendJsonResponse(res, 400, {
-      message: 'Please enter all fields'
+      message: 'Введите почту и пароль'
     });
   } else {
     User
@@ -24,7 +24,7 @@ module.exports.register = (req, res, next) => {
       .exec((err, user) => {
         if (user) { // Check if the user already exists
           sendJsonResponse(res, 400, {
-            message: 'User already exists'
+            message: 'Пользователь уже существует'
           });
         } else if (err) { // Check for error
           sendJsonResponse(res, 400, err);
@@ -36,13 +36,13 @@ module.exports.register = (req, res, next) => {
             .then(token => sendConfirmation(
               `Do Not Reply easylist <${process.env.VER_ADDRESS}>`,
               email,
-              'Confirm your registration on easylist',
-              'To confirm your registration on easylist please click this link:'
+              'Пожалуйста, подтвердите регистрацию на easylist',
+              'Чтобы подтвердить регистрацию, перейдите по ссылке:'
               + `\n${req.protocol}://${req.hostname}/api/users/register/confirm?token=${token}`)
             )
             .then(info => {
               sendJsonResponse(res, 201, {
-                message: 'Confirmation email has been sent'
+                message: 'Письмо для подтверждения отправлено'
               });
             })
             .catch(err => { // Catch all errors
@@ -56,7 +56,7 @@ module.exports.register = (req, res, next) => {
 module.exports.registerConfirm = (req, res, next) => {
   if (!req.query.token) {  // Check if token is present
     sendJsonResponse(res, 400, {
-      message: 'No token provided'
+      message: 'Неверный токен'
     });
   } else {
     // Verify the token
@@ -67,7 +67,7 @@ module.exports.registerConfirm = (req, res, next) => {
           .exec((err, user) => {
             if (user) {
               sendJsonResponse(res, 400, {
-                message: 'User already registered'
+                message: 'Пользователь уже зарегистрирован'
               });
             } else if (err) {
               sendJsonResponse(res, 400, err);
@@ -98,7 +98,7 @@ module.exports.login = (req, res, next) => {
 
   if (!email || !password) {   // Check if all data is present
     sendJsonResponse(res, 400, {
-      message: 'Please enter email and password'
+      message: 'Введите почту и пароль'
     });
   } else {
     User
@@ -106,7 +106,7 @@ module.exports.login = (req, res, next) => {
       .exec((err, user) => {
         if (!user) {            // Check if the user exists
           sendJsonResponse(res, 404, {
-            message: 'User not found'
+            message: 'Пользователь не найден'
           });
         } else if (err) {       // Check for error
           sendJsonResponse(res, 400, err);
@@ -114,7 +114,7 @@ module.exports.login = (req, res, next) => {
           bcrypt.compare(password, user.password)
             .then(isMatch => { // Verify user's password
               if (!isMatch) {
-                throw { message: 'Invalid credentials' };
+                throw { message: 'Неправильные данные для входа' };
               } else {
                 return jwtSignPromise({ id: user.id }, process.env.JWT_SECRET);
               }
