@@ -141,7 +141,7 @@ module.exports.googleLogin = (req, res, next) => {
   oAuthClient
     .verifyIdToken({ idToken: req.body.tokenId, audience: process.env.CLIENT_ID })
     .then(authRes => { // Decode the token and verify the user
-      const { email_verified, email } = authRes.payload;
+      const { email } = authRes.payload;
       User
         .findOne({ email })
         .exec((err, user) => {
