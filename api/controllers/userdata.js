@@ -142,7 +142,7 @@ module.exports.addTask = (req, res, next) => {
     req.userdata.virtues[req.virtue_index].tasks.push(newTask);
     req.userdata.save()
       .then(savedData => {
-        const currentVirtue = savedData.virtues[req.virtue_index]
+        const currentVirtue = savedData.virtues[req.virtue_index];
         const lastIndex = currentVirtue.tasks.length - 1;
         sendJsonResponse(res, 201, {
           id: currentVirtue.tasks[lastIndex].id,
@@ -197,7 +197,7 @@ module.exports.sendSurvey = (req, res, next) => {
             date: t.date
           }));
           return acc.concat(tasks);
-        }, [])
+        }, []);
         // Filter by date
         let tasksFiltered = tasksArray.filter(t => isToday(t.date));
         // Send them
@@ -211,8 +211,8 @@ module.exports.sendSurvey = (req, res, next) => {
             message: 'Отправлено успешно'
           });
         }).catch(err => {
-            sendJsonResponse(res, 400, err);
-          });
+          sendJsonResponse(res, 400, err);
+        });
       }
     });
 };
@@ -236,13 +236,13 @@ function isToday(date) {
 // Formats the tasks in a pretty way
 function formSurvey(tasks) {
   let result = 'Привет! Ваши задания на сегодня:\n';
-  for (t of tasks) {
+  for (let t of tasks) {
     result += `${t.virtue}: ${t.text}\n`;
   }
   if (tasks) {
     result += '\nТак держать!\n';
   } else {
-    result += '\nНе очень много, не так ли?\n'
+    result += '\nНе очень много, не так ли?\n';
   }
   return result;
 }
