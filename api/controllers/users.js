@@ -161,24 +161,27 @@ module.exports.googleLogin = (req, res, next) => {
                 });
               });
           } else { // User isn't found, register and log in
-            Userdata.create({})
-              .then(userdata => User.create({
-                email,
-                password: utils.generatePassword(),
-                data_id: userdata.id })
-              )
-              .then(user => {
-                jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
-                  .then(token => {
-                    utils.sendJsonResponse(res, 200, {
-                      token,
-                      user: {
-                        id: user.id,
-                        email: user.email,
-                        data_id: user.data_id
-                      }
-                    });
-                  });
+            bcrypt.hash(utils.generatePassword(), 10)
+              .then(hash => {
+                Userdata.create({})
+                  .then(userdata => User.create({
+                    email,
+                    password: hash,
+                    data_id: userdata.id })
+                  )
+                  .then(user => {
+                    jwtSignPromise({ id: user.id }, process.env.JWT_SECRET)
+                      .then(token => {
+                        utils.sendJsonResponse(res, 200, {
+                          token,
+                          user: {
+                            id: user.id,
+                            email: user.email,
+                            data_id: user.data_id
+                          }
+                        });
+                      });
+                  })
               })
               .catch(err => {
                 utils.sendJsonResponse(res, 400, err);
