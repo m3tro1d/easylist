@@ -34,7 +34,7 @@ app.use('/api/userdata', userdataRouter);
 // Provide static assets route in production
 if (app.get('env') === 'production') {
   app.use(express.static('client/build'));
-  app.get(['/', '/login', '/signup', '/profile'], (req, res, next) => {
+  app.get(['/', '/login', '/signup', '/profile', '/tasks'], (req, res, next) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
   app.get('/googlebe6116dded7a06fc.html', (req, res, next) => {
