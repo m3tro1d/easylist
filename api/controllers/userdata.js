@@ -118,6 +118,7 @@ module.exports.getTasks = (req, res, next) => {
             let tasks = v.tasks.map(t => ({
               id: t.id,
               text: t.text,
+              isCompleted: t.isCompleted,
               virtue: v.name,
               date: t.date
             }));
@@ -155,6 +156,38 @@ module.exports.addTask = (req, res, next) => {
       .catch(err => { // Check for error
         utils.sendJsonResponse(res, 400, err);
       });
+  }
+};
+
+module.exports.updateTask = (req, res, next) => {
+  const { text, isCompleted } = req.body;
+  if (!text && !isCompleted) { // Check for the minimal data
+    utils.sendJsonResponse(res, 400, {
+      message: 'Введите текст и/или состояние выполнения'
+    });
+  } else {
+    let tasks = req.userdata.virtues[req.virtue_index].tasks;
+    const taskIndex = tasks.findIndex(el => 
+      el.id === req.params.taskId
+    );
+    if (taskIndex === -1) { // Check if the task is found
+      utils.sendJsonResponse(res, 404, {
+        message: 'Задача не найдена'
+      });
+    } else {
+      tasks[taskIndex].text = text || tasks[taskIndex].text;
+      tasks[taskIndex].isCompleted = isCompleted || tasks[taskIndex].isCompleted;
+      req.userdata.save()
+        .then(savedData => {
+          // Send the updated task
+          utils.sendJsonResponse(
+            res, 400, savedData.virtues[req.virtue_index].tasks[taskIndex]
+          );
+        })
+        .catch(err => {
+          utils.sendJsonResponse(res, 400, err);
+        });
+    }
   }
 };
 
