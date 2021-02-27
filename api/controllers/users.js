@@ -201,3 +201,17 @@ module.exports.getUser = (req, res, next) => {
     data_id: req.user.data_id
   });
 };
+
+module.exports.getUsersAmount = (req, res, next) => {
+  User
+    .find({})
+    .exec((err, users) => {
+      if (err) { // Check for error
+        utils.sendJsonResponse(res, 400, err);
+      } else {
+        utils.sendJsonResponse(res, 200, {
+          amount: users.length
+        });
+      }
+    });
+}

@@ -18,4 +18,7 @@ router.post('/googlelogin', ctrlUsers.googleLogin);
 // Get current user details
 router.get('/user', auth, getters.getUserById, ctrlUsers.getUser);
 
+// Get user amount
+router.get('/amount', ctrlUsers.getUsersAmount);
+
 module.exports = router;
