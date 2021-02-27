@@ -181,7 +181,7 @@ module.exports.googleLogin = (req, res, next) => {
                           }
                         });
                       });
-                  })
+                  });
               })
               .catch(err => {
                 utils.sendJsonResponse(res, 400, err);
@@ -214,4 +214,4 @@ module.exports.getUsersAmount = (req, res, next) => {
         });
       }
     });
-}
+};
