@@ -159,7 +159,7 @@ module.exports.addTask = (req, res, next) => {
 };
 
 module.exports.deleteTask = (req, res, next) => {
-  const taskIndex = req.userdata.virtues[req.virtue_index].tasks.find(el => 
+  const taskIndex = req.userdata.virtues[req.virtue_index].tasks.findIndex(el => 
     el.id === req.params.taskId
   );
   if (taskIndex === -1) { // Check if the task is found
