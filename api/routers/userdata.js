@@ -20,6 +20,8 @@ router.delete('/virtues/:virtueName', auth, getters.getUserById, getters.getVirt
 
 // Add a task in a virtue
 router.post('/virtues/:virtueName/tasks/', auth, getters.getUserById, getters.getVirtueByName, ctrlUserdata.addTask);
+// Update a task
+router.put('/virtues/:virtueName/tasks/:taskId', auth, getters.getUserById, getters.getVirtueByName, ctrlUserdata.updateTask);
 // Delete a task
 router.delete('/virtues/:virtueName/tasks/:taskId', auth, getters.getUserById, getters.getVirtueByName, ctrlUserdata.deleteTask);
 
