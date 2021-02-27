@@ -14,6 +14,10 @@ const userdataSchema = mongoose.Schema({
       date: {
         type: Date,
         'default': Date.now()
+      },
+      isCompleted: {
+        type: Boolean,
+        'default': false
       }
     }]
   }]
