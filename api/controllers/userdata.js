@@ -160,8 +160,8 @@ module.exports.addTask = (req, res, next) => {
 };
 
 module.exports.updateTask = (req, res, next) => {
-  const { text, isCompleted } = req.body;
-  if (!text && !isCompleted) { // Check for the minimal data
+  const { text, isCompleted, date } = req.body;
+  if (!text && typeof isCompleted !== 'boolean') { // Check for the minimal data
     utils.sendJsonResponse(res, 400, {
       message: 'Введите текст и/или состояние выполнения'
     });
@@ -177,11 +177,22 @@ module.exports.updateTask = (req, res, next) => {
     } else {
       tasks[taskIndex].text = text || tasks[taskIndex].text;
       tasks[taskIndex].isCompleted = isCompleted || tasks[taskIndex].isCompleted;
+      if (isCompleted) { // If we want to complete the task, add a timestamp
+        if (date) {
+          tasks[taskIndex].completionDate = date;
+        } else {
+          return utils.sendJsonResponse(res, 400, {
+            message: 'Для завершения задачи необходима дата завершения'
+          });
+        }
+      } else {
+        tasks[taskIndex].completionDate = null;
+      }
       req.userdata.save()
         .then(savedData => {
           // Send the updated task
           utils.sendJsonResponse(
-            res, 400, savedData.virtues[req.virtue_index].tasks[taskIndex]
+            res, 200, savedData.virtues[req.virtue_index].tasks[taskIndex]
           );
         })
         .catch(err => {
