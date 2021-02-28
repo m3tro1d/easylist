@@ -177,7 +177,7 @@ module.exports.updateTask = (req, res, next) => {
       });
     } else {
       tasks[taskIndex].text = text || tasks[taskIndex].text;
-      tasks[taskIndex].isCompleted = isCompleted || tasks[taskIndex].isCompleted;
+      tasks[taskIndex].isCompleted = isCompleted || tasks[taskIndex].isCompleted || false;
       if (isCompleted) { // If we want to complete the task, add a timestamp
         if (date) {
           tasks[taskIndex].completionDate = date;
