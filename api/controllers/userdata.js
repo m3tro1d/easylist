@@ -119,6 +119,7 @@ module.exports.getTasks = (req, res, next) => {
               id: t.id,
               text: t.text,
               isCompleted: t.isCompleted,
+              completionDate: t.completionDate || null,
               virtue: v.name,
               date: t.date
             }));
