@@ -18,6 +18,10 @@ const userdataSchema = mongoose.Schema({
       isCompleted: {
         type: Boolean,
         'default': false
+      },
+      completionDate: {
+        type: Date,
+        required: false
       }
     }]
   }]
