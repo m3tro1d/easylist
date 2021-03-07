@@ -198,8 +198,24 @@ module.exports.getUser = (req, res, next) => {
   utils.sendJsonResponse(res, 200, {
     id: req.user.id,
     email: req.user.email,
+    isVegetarian: req.user.isVegetarian,
     data_id: req.user.data_id
   });
+};
+
+module.exports.updateUser = (req, res, next) => {
+  const { isVegetarian } = req.body;
+  if (typeof isVegetarian !== 'boolean') { // Check for the data
+    utils.sendJsonResponse(res, 400, {
+      message: 'Недостаточно данных'
+    });
+  } else {
+    req.user.isVegetarian = isVegetarian;
+    req.user.save()
+      .then(savedUser => {
+        utils.sendJsonResponse(res, 200, req.user);
+      });
+  }
 };
 
 module.exports.getUsersAmount = (req, res, next) => {
