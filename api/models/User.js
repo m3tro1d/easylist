@@ -9,6 +9,10 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  isVegetarian: {
+    type: Boolean,
+    'default': false
+  },
   data_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Userdata',
