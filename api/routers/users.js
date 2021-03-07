@@ -17,6 +17,8 @@ router.post('/login', ctrlUsers.login);
 router.post('/googlelogin', ctrlUsers.googleLogin);
 // Get current user details
 router.get('/user', auth, getters.getUserById, ctrlUsers.getUser);
+// Update users parameters
+router.put('/user', auth, getters.getUserById, ctrlUsers.updateUser)
 
 // Get user amount
 router.get('/amount', ctrlUsers.getUsersAmount);
